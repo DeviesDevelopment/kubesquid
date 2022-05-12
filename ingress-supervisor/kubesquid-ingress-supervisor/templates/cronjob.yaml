@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+        {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: {{ .Values.image.repository }}
+            imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure 

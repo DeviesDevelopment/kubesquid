@@ -1,0 +1,10 @@
+image:
+  repository: miledevies/kubesquid-ingress-supervisor:3
+imagePullSecrets:
+  - name: regcred
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+replicaCount: 1
