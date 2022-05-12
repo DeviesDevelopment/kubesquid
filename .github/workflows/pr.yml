@@ -15,11 +15,13 @@ jobs:
   docker-push:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2 
       - uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - uses: docker/build-push-action@v3
         with:
+          context: ingress-supervisor
           push: true
           tags: kubesquid/ingress-supervisor:${{ github.event.number }}
