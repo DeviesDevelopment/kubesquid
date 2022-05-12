@@ -1,23 +1,19 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: CronJob
 metadata:
   name: {{ .Chart.Name }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
-  selector:
-    matchLabels:
-      app: {{ .Chart.Name }}
-  template:
-    metadata:
-      labels:
-        app: {{ .Chart.Name }}
+  schedule: "* * * * *"
+  jobTemplate:
     spec:
-    {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
-      containers:
-        - name: {{ .Chart.Name }}
-          image: {{ .Values.image.repository }}
+      template:
+        spec:
+        {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: {{ .Values.image.repository }}
+            imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure 
