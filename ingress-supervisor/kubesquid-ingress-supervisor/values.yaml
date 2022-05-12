@@ -1,7 +1,7 @@
 image:
   repository: miledevies/kubesquid-ingress-supervisor:3
 imagePullSecrets:
-  - name: regcred
+  - name: registry-secret
 autoscaling:
   enabled: false
   minReplicas: 1
