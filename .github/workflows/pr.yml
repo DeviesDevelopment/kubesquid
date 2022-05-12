@@ -25,3 +25,10 @@ jobs:
           context: ingress-supervisor
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 
+      - uses: helm/kind-action@v1.2.0
+      - bash: kubectl version
+
