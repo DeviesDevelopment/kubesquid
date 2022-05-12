@@ -12,3 +12,16 @@ jobs:
       - uses: hadolint/hadolint-action@v2.0.0
         with:
           dockerfile: ingress-supervisor/Dockerfile
+  docker-build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 
+      - uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v3
+        with:
+          context: ingress-supervisor
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
