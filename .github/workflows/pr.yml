@@ -24,4 +24,4 @@ jobs:
         with:
           context: ingress-supervisor
           push: true
-          tags: kubesquid/ingress-supervisor:${{ github.event.number }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
