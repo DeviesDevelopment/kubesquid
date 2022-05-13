@@ -33,16 +33,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2 
       - uses: helm/kind-action@v1.2.0
-      - uses: actions-hub/kubectl@v1.21.2
-        with: 
-          args: create secret docker-registry registry-secret --docker-server=https://index.docker.io/v1/ --docker-username=${{ secrets.DOCKERHUB_USERNAME }} --docker-password=${{ secrets.DOCKERHUB_TOKEN }}
+      - run: kubectl create secret docker-registry registry-secret --docker-server=https://index.docker.io/v1/ --docker-username=${{ secrets.DOCKERHUB_USERNAME }} --docker-password=${{ secrets.DOCKERHUB_TOKEN }}
       - run: helm package kubesquid-ingress-supervisor
       - run: helm upgrade --install kubesquid-ingress-supervisor kubesquid-ingress-supervisor-*.tgz
-      - run: sleep 1 
-      - uses: actions-hub/kubectl@v1.21.2
-        with: 
-          args: create job --from=cronjob/kubesquid-ingress-supervisor manual-trigger
-      - uses: actions-hub/kubectl@v1.21.2
-        with: 
-          args: logs $(kubectl get pods -l job-name=manual-trigger --output=jsonpath='{.items[*].metadata.name}')
-
