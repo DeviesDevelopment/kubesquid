@@ -11,4 +11,17 @@ subjects:
   - kind: ServiceAccount
     namespace: default
     name: {{ include "kubesquid-ingress-supervisor.serviceAccountName" . }}
-   
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: manage-ingresses-binding
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: manage-ingresses
+subjects:
+  - kind: ServiceAccount
+    namespace: default
+    name: {{ include "kubesquid-ingress-supervisor.serviceAccountName" . }}
