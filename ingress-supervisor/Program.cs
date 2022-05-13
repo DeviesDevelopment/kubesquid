@@ -18,5 +18,5 @@ Console.WriteLine($"Namespaces: {ns}");
 
 var client = new Kubernetes(config);
 
-var namespaces = client.CoreV1.ListNamespace();
-Console.WriteLine(namespaces);
+var pods = client.CoreV1.ListPods();
+Console.WriteLine(pods);
