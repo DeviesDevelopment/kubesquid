@@ -7,3 +7,13 @@ rules:
   - apiGroups: ["*"]
     resources: ["services"]
     verbs: ["watch"]
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: manage-ingresses
+  namespace: default
+rules:
+  - apiGroups: [ "*" ]
+    resources: [ "ingresses" ]
+    verbs: [ "create", "update", "delete" ]
