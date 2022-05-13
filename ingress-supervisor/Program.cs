@@ -66,7 +66,7 @@ var ingress = new V1Ingress()
     }
 };
 
-var b = await client.CreateNamespacedIngressAsync(null, config.Namespace);
+var b = await client.CreateNamespacedIngressAsync(ingress, config.Namespace);
 
 var servicesListResp = client.CoreV1.ListNamespacedServiceWithHttpMessagesAsync("default", watch: true);
 await foreach (var (type, item) in servicesListResp.WatchAsync<V1Service, V1ServiceList>())
