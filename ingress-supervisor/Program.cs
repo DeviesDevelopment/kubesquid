@@ -6,7 +6,8 @@ var config = KubernetesClientConfiguration.InClusterConfig();
 Console.WriteLine(config.Username);
 Console.WriteLine(config.Namespace);
 
-Console.WriteLine(Directory.GetFiles("/var/run/secrets/kubernetes.io/serviceaccount"));
+var files = Directory.GetFiles("/var/run/secrets/kubernetes.io/serviceaccount");
+Console.WriteLine(string.Join(",", files));
 
 var client = new Kubernetes(config);
 
