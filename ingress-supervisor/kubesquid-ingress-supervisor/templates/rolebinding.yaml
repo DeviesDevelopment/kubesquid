@@ -25,4 +25,3 @@ subjects:
   - kind: ServiceAccount
     namespace: default
     name: {{ include "kubesquid-ingress-supervisor.serviceAccountName" . }}
-  
