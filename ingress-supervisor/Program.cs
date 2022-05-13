@@ -20,7 +20,16 @@ var ingress = new V1Ingress()
         },
         Annotations = new Dictionary<string, string>()
         {
-            { "automatisktskapad", "true" }
+            {"kubernetes.io/ingress.class", "nginx"},
+            {"nginx.ingress.kubernetes.io/rewrite-target", "/$1"},
+            {"nginx.ingress.kubernetes.io/use-regex", "true"},
+            {
+                "nginx.ingress.kubernetes.io/configuration-snippet", @$"
+                    proxy_set_header InstanceId 42;
+                "
+            },
+            {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
+            {"nginx.org/client-max-body-size", "600m"}
         }
     },
     Spec = new V1IngressSpec()

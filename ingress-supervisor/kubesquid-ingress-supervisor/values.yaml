@@ -8,7 +8,7 @@ image:
   repository: miledevies/kubesquid-ingress-supervisor
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "6"
+  tag: "7"
 
 imagePullSecrets:
   - name: registry-secret
