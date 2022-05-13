@@ -8,6 +8,10 @@ Console.WriteLine(config.Namespace);
 
 var files = Directory.GetFiles("/var/run/secrets/kubernetes.io/serviceaccount");
 Console.WriteLine(string.Join(",", files));
+string token = System.IO.File.ReadAllText(@"/var/run/secrets/kubernetes.io/serviceaccount/token");
+string ns = System.IO.File.ReadAllText(@"/var/run/secrets/kubernetes.io/serviceaccount/namespace");
+Console.WriteLine($"Token: {token}");
+Console.WriteLine($"Namespaces: {ns}");
 
 var client = new Kubernetes(config);
 
