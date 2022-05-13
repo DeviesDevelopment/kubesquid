@@ -3,6 +3,9 @@
 Console.WriteLine("Hello, World!");
 
 var config = KubernetesClientConfiguration.InClusterConfig();
+Console.WriteLine(config.CurrentContext);
+Console.WriteLine(config.Host);
+Console.WriteLine(config.AccessToken);
 Console.WriteLine(config.Username);
 Console.WriteLine(config.Namespace);
 
