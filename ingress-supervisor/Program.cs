@@ -32,6 +32,15 @@ async Task WatchConfigMap()
     }
 }
 
-Task.WaitAll(new []{ WatchServices(), WatchConfigMap()});
+try
+{
+    Task.WaitAll(new[] { WatchServices(), WatchConfigMap() });
+}
+catch (AggregateException e)
+{ 
+    Console.WriteLine("EXCEPTION!!!");
+    Console.WriteLine(e.Message); 
+}
+
 
 Console.WriteLine("Bye, World!");
