@@ -2,7 +2,6 @@
 using k8s.Models;
 
 Console.WriteLine("Hello, World!");
-
 var config = KubernetesClientConfiguration.InClusterConfig();
 var client = new Kubernetes(config);
 var servicesListResp = client.CoreV1.ListNamespacedServiceWithHttpMessagesAsync(config.Namespace, watch: true);
@@ -16,7 +15,7 @@ async Task WatchServices()
         Console.WriteLine("==Watching Service Events==");
         Console.WriteLine(type);
         Console.WriteLine(service.Metadata.Name);
-        Console.WriteLine("==Watching Service Events");
+        Console.WriteLine("==Watching Service Events==");
     }
 }
 
@@ -31,12 +30,11 @@ async Task WatchConfigMap()
         Console.WriteLine("==Watching ConfigMap Events==");
     }
 }
-
 try
 {
     Task.WaitAll(new[] { WatchServices(), WatchConfigMap() });
 }
-catch (Exception e)
+catch (AggregateException e)
 { 
     Console.WriteLine("EXCEPTION!!!");
     Console.WriteLine(e.Message); 
