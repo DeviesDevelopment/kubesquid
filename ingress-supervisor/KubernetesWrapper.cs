@@ -4,10 +4,10 @@ using k8s.Models;
 
 namespace ingress_supervisor;
 
-public class KubernetesClient
+public class KubernetesWrapper
 {
     
-public async void CreateIngress(Kubernetes client, string targetNamespace)
+public async void CreateIngress(Kubernetes client, string targetNamespace, string serviceName, string host, string instanceId)
 {
     var ingress = new V1Ingress()
     {
@@ -15,10 +15,10 @@ public async void CreateIngress(Kubernetes client, string targetNamespace)
         Metadata = new V1ObjectMeta()
         {
             NamespaceProperty = targetNamespace,
-            Name = "kalleanka",
+            Name = $"{serviceName}-ingress",
             Labels = new Dictionary<string, string>()
             {
-                { "autocreated", "Sant" }
+                { "autocreated", "true" }
             },
             Annotations = new Dictionary<string, string>()
             {
@@ -26,8 +26,8 @@ public async void CreateIngress(Kubernetes client, string targetNamespace)
                 {"nginx.ingress.kubernetes.io/rewrite-target", "/$1"},
                 {"nginx.ingress.kubernetes.io/use-regex", "true"},
                 {
-                    "nginx.ingress.kubernetes.io/configuration-snippet", @$"
-                        proxy_set_header InstanceId 42;
+                    $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
+                        proxy_set_header InstanceId {instanceId};
                     "
                 },
                 {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
@@ -40,7 +40,7 @@ public async void CreateIngress(Kubernetes client, string targetNamespace)
             {
                 new V1IngressRule()
                 {
-                    Host = "baloo.devies.com",
+                    Host = host,
                     Http = new V1HTTPIngressRuleValue()
                     {
                         Paths = new Collection<V1HTTPIngressPath>()
@@ -53,7 +53,7 @@ public async void CreateIngress(Kubernetes client, string targetNamespace)
                                 {
                                     Service = new V1IngressServiceBackend()
                                     {
-                                        Name = "my-release-whoami",
+                                        Name = serviceName,
                                         Port = new V1ServiceBackendPort()
                                         {
                                             Number = 80
