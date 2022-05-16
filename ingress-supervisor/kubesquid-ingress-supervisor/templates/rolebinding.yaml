@@ -1,12 +1,26 @@
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: list-namespaces-binding
+  name: watch-services-binding
   namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: list-namespaces
+  name: watch-services
+subjects:
+  - kind: ServiceAccount
+    namespace: default
+    name: {{ include "kubesquid-ingress-supervisor.serviceAccountName" . }}
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: watch-config-map-binding
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: watch-config-map
 subjects:
   - kind: ServiceAccount
     namespace: default

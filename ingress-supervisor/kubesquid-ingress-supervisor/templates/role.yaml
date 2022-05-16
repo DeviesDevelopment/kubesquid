@@ -1,11 +1,21 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: list-namespaces
+  name: watch-services
   namespace: default
 rules:
   - apiGroups: ["*"]
     resources: ["services"]
+    verbs: ["watch"]
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: watch-config-map
+  namespace: default
+rules:
+  - apiGroups: ["*"]
+    resources: ["configmaps"]
     verbs: ["watch"]
 ---
 kind: Role
