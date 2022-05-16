@@ -36,7 +36,7 @@ try
 }
 catch (AggregateException e)
 { 
-    Console.WriteLine("EXCEPTION!!!");
+    Console.WriteLine("An exception occured in one of our background tasks");
     Console.WriteLine(e.Message); 
 }
 
