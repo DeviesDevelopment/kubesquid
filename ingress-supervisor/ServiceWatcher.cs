@@ -22,8 +22,8 @@ public class ServiceWatcher : BackgroundService
             await WatchServices();
         }
         // TODO: Clean up
-    } 
-    private async Task WatchServices() 
+    }
+    private async Task WatchServices()
     {
         var servicesListResp = _client.CoreV1.ListNamespacedServiceWithHttpMessagesAsync(_targetNamespace, watch: true);
         Console.WriteLine("Staring to watch services");
