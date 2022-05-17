@@ -44,11 +44,14 @@ public class ServiceWatcher : BackgroundService
                     if (service.Metadata?.Annotations?.ContainsKey("squid") == true)
                     {
                         var squidConfig = await _kubernetesWrapper.GetSquidConfig();
-                        foreach (var config in squidConfig)
+                        var serviceConfigs = squidConfig
+                            .Where(config => config.ServiceName.Equals(service.Metadata.Name))
+                            .ToList();
+                        // TODO: Check if ingress already exist, for each service config
+                        foreach (var serviceConfig in serviceConfigs)
                         {
-                            Console.WriteLine(config);
+                            _kubernetesWrapper.CreateIngress(serviceConfig);
                         }
-                        var ingresses = await _kubernetesWrapper.GetIngresses();
                     }
                     break;
                 default:

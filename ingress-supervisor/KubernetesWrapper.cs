@@ -36,7 +36,7 @@ public class KubernetesWrapper
             .ToList();
     }
 
-    public async void CreateIngress(string serviceName, string host, string instanceId)
+    public async void CreateIngress(TenantConfig tenantConfig)
     {
         var ingress = new V1Ingress()
         {
@@ -44,7 +44,7 @@ public class KubernetesWrapper
             Metadata = new V1ObjectMeta()
             {
                 NamespaceProperty = _targetNamespace,
-                Name = $"{serviceName}-ingress",
+                Name = $"{tenantConfig.ServiceName}-{tenantConfig.InstanceId}-ingress",
                 Labels = new Dictionary<string, string>()
             {
                 { "autocreated", "true" }
@@ -56,7 +56,7 @@ public class KubernetesWrapper
                 {"nginx.ingress.kubernetes.io/use-regex", "true"},
                 {
                     $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
-                        proxy_set_header InstanceId {instanceId};
+                        proxy_set_header InstanceId {tenantConfig.InstanceId};
                     "
                 },
                 {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
@@ -69,7 +69,7 @@ public class KubernetesWrapper
             {
                 new V1IngressRule()
                 {
-                    Host = host,
+                    Host = tenantConfig.HostName,
                     Http = new V1HTTPIngressRuleValue()
                     {
                         Paths = new Collection<V1HTTPIngressPath>()
@@ -82,10 +82,10 @@ public class KubernetesWrapper
                                 {
                                     Service = new V1IngressServiceBackend()
                                     {
-                                        Name = serviceName,
+                                        Name = tenantConfig.ServiceName,
                                         Port = new V1ServiceBackendPort()
                                         {
-                                            Number = 80
+                                            Number = tenantConfig.Port
                                         }
                                     }
                                 }
