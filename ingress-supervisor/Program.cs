@@ -6,14 +6,16 @@ using Microsoft.Extensions.Hosting;
 
 Console.WriteLine("Hello, World!");
 
-var config = KubernetesClientConfiguration.InClusterConfig();
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+var config = environment == "Development" ? KubernetesClientConfiguration.BuildConfigFromConfigFile() : KubernetesClientConfiguration.InClusterConfig();
+
 var builder = new HostBuilder().ConfigureServices((hostContext, services) =>
 {
     services.AddSingleton<Kubernetes>(new Kubernetes(config));
     services.AddSingleton<KubernetesClientConfiguration>(config);
     services.AddSingleton<KubernetesWrapper>();
-    services.AddSingleton<IHostedService, ServiceWatcher>();
-    services.AddSingleton<IHostedService, ConfigmapWatcher>();
+    services.AddHostedService<ServiceWatcher>();
+    services.AddHostedService<ConfigmapWatcher>();
 });
 
 await builder.RunConsoleAsync();

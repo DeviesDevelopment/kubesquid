@@ -20,6 +20,12 @@ public class ServiceWatcher : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        /*stoppingToken.Register(() =>
+        {
+
+        })
+        */
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await WatchServices();

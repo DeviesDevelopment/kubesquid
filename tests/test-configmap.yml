@@ -1,18 +1,21 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: test-configmap
+  name: kubesquid
 data:
-  baloo.devies.com_kunda: |
+  kunda: |
     {
-      "service-name": "our-service",
+      "serviceName": "our-service",
       "instanceId": "666",
-      "port": "1336"
+      "hostName": "baloo.devies.com",
+      "port": 1336,
+      "path": "/kund-a"
     }
-  baloo.devies.com_kundb: |
+  kundb: |
     {
-      "service-name": "our-service",
+      "serviceName": "our-service",
       "instanceId": "888",
-      "port": "1337"
+      "hostName": "baloo.devies.com",
+      "port": 1337,
+      "path": "/kund-b"
     }
-  
