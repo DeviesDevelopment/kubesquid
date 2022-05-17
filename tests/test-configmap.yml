@@ -7,7 +7,7 @@ data:
     {
       "service-name": "our-service",
       "instanceId": "666",
-      "port": "1337"
+      "port": "1336"
     }
   baloo.devies.com_kundb: |
     {
