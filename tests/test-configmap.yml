@@ -1,0 +1,18 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: test-configmap
+data:
+  baloo.devies.com_kunda: |
+    {
+      "service-name": "our-service",
+      "instanceId": "666",
+      "port": "1337"
+    }
+  baloo.devies.com_kundb: |
+    {
+      "service-name": "our-service",
+      "instanceId": "888",
+      "port": "1337"
+    }
+  
