@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
+using ingress_supervisor.Models;
 using k8s;
 using k8s.Models;
 
@@ -6,6 +8,7 @@ namespace ingress_supervisor;
 
 public class KubernetesWrapper
 {
+    private const string ConfigMapName = "kubesquid";
     private readonly Kubernetes _client;
     private readonly string _targetNamespace;
 
@@ -19,6 +22,14 @@ public class KubernetesWrapper
     {
         var ingresses = await _client.ListNamespacedIngressAsync(_targetNamespace);
         return ingresses.Items;
+    }
+
+    public async Task<List<TenantConfig?>> GetSquidConfig()
+    {
+        var configMap = await _client.ReadNamespacedConfigMapAsync(ConfigMapName, _targetNamespace);
+        return configMap.Data
+            .Select(pair => JsonSerializer.Deserialize<TenantConfig>(pair.Value))
+            .ToList();
     }
 
     public async void CreateIngress(string serviceName, string host, string instanceId)

@@ -37,6 +37,11 @@ public class ServiceWatcher : BackgroundService
                 case WatchEventType.Added:
                     if (service.Metadata?.Annotations?.ContainsKey("squid") == true)
                     {
+                        var squidConfig = await _kubernetesWrapper.GetSquidConfig();
+                        foreach (var config in squidConfig)
+                        {
+                            Console.WriteLine(config);
+                        }
                         var ingresses = await _kubernetesWrapper.GetIngresses();
                     }
                     break;
