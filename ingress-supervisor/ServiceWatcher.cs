@@ -20,6 +20,7 @@ public class ServiceWatcher : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        //TODO: Stop watching service list when shutting down.
         /*stoppingToken.Register(() =>
         {
 
@@ -30,7 +31,6 @@ public class ServiceWatcher : BackgroundService
         {
             await WatchServices();
         }
-        // TODO: Clean up
     }
     private async Task WatchServices()
     {
@@ -38,6 +38,7 @@ public class ServiceWatcher : BackgroundService
         Console.WriteLine("Staring to watch services");
         await foreach (var (type, service) in servicesListResp.WatchAsync<V1Service, V1ServiceList>())
         {
+            Console.WriteLine($"Got Service Event of Type: {type} for Service: {service.Metadata.Name}");
             switch (type)
             {
                 case WatchEventType.Added:
@@ -51,16 +52,14 @@ public class ServiceWatcher : BackgroundService
                         foreach (var serviceConfig in serviceConfigs)
                         {
                             _kubernetesWrapper.CreateIngress(serviceConfig);
+                            Console.WriteLine($"Created ingress for service: {serviceConfig.ServiceName}");
                         }
                     }
+
                     break;
                 default:
                     break;
             }
-            Console.WriteLine("==Watching Service Events==");
-            Console.WriteLine(type);
-            Console.WriteLine(service.Metadata.Name);
-            Console.WriteLine("==Watching Service Events==");
         }
     }
 }

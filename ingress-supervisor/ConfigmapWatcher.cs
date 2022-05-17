@@ -24,7 +24,6 @@ public class ConfigmapWatcher : BackgroundService
         {
             await WatchConfigmaps();
         }
-        // TODO: Clean up
     }
     private async Task WatchConfigmaps()
     {
@@ -32,10 +31,7 @@ public class ConfigmapWatcher : BackgroundService
         Console.WriteLine("Starting to watch the config map");
         await foreach (var (type, configMap) in configMapResp.WatchAsync<V1ConfigMap, V1ConfigMapList>())
         {
-            Console.WriteLine("==Watching ConfigMap Events==");
-            Console.WriteLine(type);
-            Console.WriteLine(configMap.Metadata.Name);
-            Console.WriteLine("==Watching ConfigMap Events==");
+            Console.WriteLine($"Got Configmap Event: {type} for configmap: {configMap.Metadata.Name}");
         }
     }
 }

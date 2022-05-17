@@ -4,7 +4,7 @@ using k8s;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-Console.WriteLine("Hello, World!");
+Console.WriteLine("Starting kubesquid");
 
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 var config = environment == "Development" ? KubernetesClientConfiguration.BuildConfigFromConfigFile() : KubernetesClientConfiguration.InClusterConfig();
@@ -20,4 +20,4 @@ var builder = new HostBuilder().ConfigureServices((hostContext, services) =>
 
 await builder.RunConsoleAsync();
 
-Console.WriteLine("Bye, World!");
+Console.WriteLine("Exiting kubeqsuid");
