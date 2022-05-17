@@ -37,6 +37,7 @@ public class ServiceWatcher : BackgroundService
                 case WatchEventType.Added:
                     if (service.Metadata?.Annotations?.ContainsKey("squid") == true)
                     {
+                        var ingresses = await _kubernetesWrapper.GetIngresses();
                     }
                     break;
                 default:
