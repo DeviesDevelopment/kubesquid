@@ -22,8 +22,8 @@ public class ConfigmapWatcher : BackgroundService
             await WatchConfigmaps();
         }
         // TODO: Clean up
-    } 
-    private async Task WatchConfigmaps() 
+    }
+    private async Task WatchConfigmaps()
     {
         var configMapResp = _client.CoreV1.ListNamespacedConfigMapWithHttpMessagesAsync(_targetNamespace, watch: true);
         Console.WriteLine("Starting to watch the config map");

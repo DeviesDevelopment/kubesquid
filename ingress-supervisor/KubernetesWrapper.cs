@@ -6,21 +6,21 @@ namespace ingress_supervisor;
 
 public class KubernetesWrapper
 {
-    
-public async void CreateIngress(Kubernetes client, string targetNamespace, string serviceName, string host, string instanceId)
-{
-    var ingress = new V1Ingress()
+
+    public async void CreateIngress(Kubernetes client, string targetNamespace, string serviceName, string host, string instanceId)
     {
-        Kind = "Ingress",
-        Metadata = new V1ObjectMeta()
+        var ingress = new V1Ingress()
         {
-            NamespaceProperty = targetNamespace,
-            Name = $"{serviceName}-ingress",
-            Labels = new Dictionary<string, string>()
+            Kind = "Ingress",
+            Metadata = new V1ObjectMeta()
+            {
+                NamespaceProperty = targetNamespace,
+                Name = $"{serviceName}-ingress",
+                Labels = new Dictionary<string, string>()
             {
                 { "autocreated", "true" }
             },
-            Annotations = new Dictionary<string, string>()
+                Annotations = new Dictionary<string, string>()
             {
                 {"kubernetes.io/ingress.class", "nginx"},
                 {"nginx.ingress.kubernetes.io/rewrite-target", "/$1"},
@@ -33,10 +33,10 @@ public async void CreateIngress(Kubernetes client, string targetNamespace, strin
                 {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
                 {"nginx.org/client-max-body-size", "600m"}
             }
-        },
-        Spec = new V1IngressSpec()
-        {
-            Rules = new List<V1IngressRule>()
+            },
+            Spec = new V1IngressSpec()
+            {
+                Rules = new List<V1IngressRule>()
             {
                 new V1IngressRule()
                 {
@@ -65,8 +65,9 @@ public async void CreateIngress(Kubernetes client, string targetNamespace, strin
                     }
                 }
             }
-        }
-    };
-    
-    var b = await client.CreateNamespacedIngressAsync(ingress, targetNamespace);
-}}
+            }
+        };
+
+        var b = await client.CreateNamespacedIngressAsync(ingress, targetNamespace);
+    }
+}
