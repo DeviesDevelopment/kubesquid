@@ -1,10 +1,21 @@
-﻿using ingress_supervisor;
+﻿using DefaultNamespace;
 using k8s;
-using k8s.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 Console.WriteLine("Hello, World!");
+
 var config = KubernetesClientConfiguration.InClusterConfig();
 var client = new Kubernetes(config);
+
+var builder = new HostBuilder().ConfigureServices((hostContext, services) =>
+{
+    services.AddSingleton<IHostedService>(x => new ServiceWatcher(client, config.Namespace));
+});
+
+await builder.RunConsoleAsync();
+
+/*
 var servicesListResp = client.CoreV1.ListNamespacedServiceWithHttpMessagesAsync(config.Namespace, watch: true);
 var configMapResp = client.CoreV1.ListNamespacedConfigMapWithHttpMessagesAsync(config.Namespace, watch: true);
 var kubernetesClient = new KubernetesWrapper();
@@ -55,6 +66,6 @@ catch (AggregateException e)
     Console.WriteLine("An exception occured in one of our background tasks");
     Console.WriteLine(e.Message); 
 }
-
+*/
 
 Console.WriteLine("Bye, World!");
