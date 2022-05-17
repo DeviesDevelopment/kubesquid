@@ -9,10 +9,10 @@ public class ConfigmapWatcher : BackgroundService
     private readonly Kubernetes _client;
     private readonly string _targetNamespace;
 
-    public ConfigmapWatcher(Kubernetes client, string targetNamespace)
+    public ConfigmapWatcher(Kubernetes client, KubernetesClientConfiguration config)
     {
         _client = client;
-        _targetNamespace = targetNamespace;
+        _targetNamespace = config.Namespace;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

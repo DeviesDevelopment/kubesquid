@@ -1,3 +1,4 @@
+using ingress_supervisor;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Hosting;
@@ -8,11 +9,13 @@ public class ServiceWatcher : BackgroundService
 {
     private readonly Kubernetes _client;
     private readonly string _targetNamespace;
+    private readonly KubernetesWrapper _kubernetesWrapper;
 
-    public ServiceWatcher(Kubernetes client, string targetNamespace)
+    public ServiceWatcher(Kubernetes client, KubernetesClientConfiguration config, KubernetesWrapper kubernetesWrapper)
     {
         _client = client;
-        _targetNamespace = targetNamespace;
+        _targetNamespace = config.Namespace;
+        _kubernetesWrapper = kubernetesWrapper;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -32,6 +35,9 @@ public class ServiceWatcher : BackgroundService
             switch (type)
             {
                 case WatchEventType.Added:
+                    if (service.Metadata?.Annotations?.ContainsKey("squid") == true)
+                    {
+                    }
                     break;
                 default:
                     break;

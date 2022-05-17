@@ -6,15 +6,29 @@ namespace ingress_supervisor;
 
 public class KubernetesWrapper
 {
+    private readonly Kubernetes _client;
+    private readonly string _targetNamespace;
 
-    public async void CreateIngress(Kubernetes client, string targetNamespace, string serviceName, string host, string instanceId)
+    public KubernetesWrapper(Kubernetes client, KubernetesClientConfiguration config)
+    {
+        _client = client;
+        _targetNamespace = config.Namespace;
+    }
+
+    public async Task<IList<V1Ingress>> GetIngresses()
+    {
+        var ingresses = await _client.ListNamespacedIngressAsync(_targetNamespace);
+        return ingresses.Items;
+    }
+
+    public async void CreateIngress(string serviceName, string host, string instanceId)
     {
         var ingress = new V1Ingress()
         {
             Kind = "Ingress",
             Metadata = new V1ObjectMeta()
             {
-                NamespaceProperty = targetNamespace,
+                NamespaceProperty = _targetNamespace,
                 Name = $"{serviceName}-ingress",
                 Labels = new Dictionary<string, string>()
             {
@@ -68,6 +82,6 @@ public class KubernetesWrapper
             }
         };
 
-        var b = await client.CreateNamespacedIngressAsync(ingress, targetNamespace);
+        var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
     }
 }
