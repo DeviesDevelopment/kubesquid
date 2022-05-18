@@ -76,7 +76,7 @@ public class KubernetesWrapper
                         {
                             new V1HTTPIngressPath()
                             {
-                                Path = "/(.*)",
+                                Path = tenantConfig.Path,
                                 PathType = "ImplementationSpecific",
                                 Backend = new V1IngressBackend()
                                 {
