@@ -23,3 +23,4 @@ docker build --no-cache -t miledevies/kubesquid-ingress-supervisor:e2e-test ../i
 kind load docker-image miledevies/kubesquid-ingress-supervisor:e2e-test --name kind
 helm package ../ingress-supervisor/kubesquid-ingress-supervisor
 helm install kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
+kubectl apply -f test-configmap.yml
