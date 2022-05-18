@@ -7,12 +7,13 @@ kind delete cluster
 kind create cluster --config=./cluster-config.yml
 # Setup NGINX Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-sleep 5 # https://github.com/kubernetes/kubernetes/issues/83242
-# Wait until the nginx controller is ready
-kubectl wait --namespace ingress-nginx \
-  --for=condition=ready pod \
-  --selector=app.kubernetes.io/component=controller \
-  --timeout=90s
+
+RETRY_COUNT=0
+until [ $RETRY_COUNT -eq 15 ] || kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s; do
+    sleep 1
+    ((RETRY_COUNT=RETRY_COUNT+1))
+done
+[ "$RETRY_COUNT" -lt 15 ]
 
 # Verify that cluster is running
 kubectl version
@@ -29,13 +30,9 @@ kubectl wait --namespace default \
   --selector=app.kubernetes.io/name=whoami \
   --timeout=90s
 
-# TODO! Vi måste vänta på våra kära ingresses!
-kubectl wait --namespace default \
-  --for=condition=ready ingress \
-  --selector=app.kubernetes.io/name=whoami \
-  --timeout=90s
+sleep 5
 
-curl localhost/customer-a -s -H -v "host: baloo.devies.com"
+curl localhost/customer-a -s -v -H "host: baloo.devies.com"
 # Verify
 curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
 echo "GET baloo.devies.com/customer-a successfully included request header Instanceid 666"
