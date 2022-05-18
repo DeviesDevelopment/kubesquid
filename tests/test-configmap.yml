@@ -5,17 +5,17 @@ metadata:
 data:
   kunda: |
     {
-      "serviceName": "my-release-whoami",
+      "serviceName": "whoami",
       "instanceId": "666",
       "hostName": "baloo.devies.com",
       "port": 80,
-      "path": "/kund-a"
+      "path": "/customer-a"
     }
   kundb: |
     {
-      "serviceName": "my-release-whoami",
+      "serviceName": "whoami",
       "instanceId": "888",
       "hostName": "baloo.devies.com",
       "port": 80,
-      "path": "/kund-b"
+      "path": "/customer-b"
     }

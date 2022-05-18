@@ -13,10 +13,13 @@ set -e
 kind delete cluster
 # Create cluster with configuration allowing an Ingress Controller
 kind create cluster --config=./cluster-config.yml
-#kubectl wait --namespace ingress-nginx \
-#  --for=condition=ready pod \
-#  --selector=app.kubernetes.io/component=controller \
-#  --timeout=90s
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+sleep 5
+# Wait until the nginx controller is ready
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=90s
 
 kubectl version
 docker build --no-cache -t miledevies/kubesquid-ingress-supervisor:e2e-test ../ingress-supervisor
@@ -24,3 +27,5 @@ kind load docker-image miledevies/kubesquid-ingress-supervisor:e2e-test --name k
 helm package ../ingress-supervisor/kubesquid-ingress-supervisor
 helm install kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
 kubectl apply -f test-configmap.yml
+# Install whoami service and annotate it with "squid"
+helm install -f whoami-values.yml whoami cowboysysop/whoami

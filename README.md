@@ -15,6 +15,7 @@ From `/tests` run
 
 ### Requirements
 
+- Docker
 - kind TODO: Version
 - kubectl TODO: Version
 - helm: TODO: Version
