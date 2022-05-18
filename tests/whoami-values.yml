@@ -1,4 +1,3 @@
 service:
   annotations:
     squid: "true"
-

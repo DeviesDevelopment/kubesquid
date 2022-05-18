@@ -47,7 +47,8 @@ public class KubernetesWrapper
                 Name = $"{tenantConfig.ServiceName}-{tenantConfig.InstanceId}-ingress",
                 Labels = new Dictionary<string, string>()
             {
-                { "autocreated", "true" }
+                { "autocreated", "true" }, // TODO: Yeet me
+                { "app.kubernetes.io/created-by", "kubesquid" }
             },
                 Annotations = new Dictionary<string, string>()
             {
@@ -76,7 +77,7 @@ public class KubernetesWrapper
                         {
                             new V1HTTPIngressPath()
                             {
-                                Path = "/(.*)",
+                                Path = tenantConfig.Path,
                                 PathType = "ImplementationSpecific",
                                 Backend = new V1IngressBackend()
                                 {
