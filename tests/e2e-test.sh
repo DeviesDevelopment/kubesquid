@@ -2,9 +2,6 @@
 # Terminate if any command fails
 set -ex
 
-kind delete cluster
-# Create cluster with configuration allowing an Ingress Controller
-kind create cluster --config=./cluster-config.yml
 # Setup NGINX Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 

@@ -33,4 +33,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: helm/kind-action@v1.2.0
+        with:
+          config: cluster-config.yml
       - run: ./e2e-test.sh
