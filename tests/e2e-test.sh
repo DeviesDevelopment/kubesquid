@@ -2,6 +2,8 @@
 # Terminate if any command fails
 set -ex
 
+docker build --no-cache -t miledevies/kubesquid-ingress-supervisor:e2e-test ../ingress-supervisor
+
 # Setup NGINX Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
@@ -14,8 +16,6 @@ done
 
 # Verify that cluster is running
 kubectl version
-# TODO: Move up!
-docker build --no-cache -t miledevies/kubesquid-ingress-supervisor:e2e-test ../ingress-supervisor
 kind load docker-image miledevies/kubesquid-ingress-supervisor:e2e-test --name kind
 helm package ../ingress-supervisor/kubesquid-ingress-supervisor
 helm install --set image.tag=e2e-test kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
@@ -30,9 +30,8 @@ kubectl wait --namespace default \
 
 sleep 5
 
-curl localhost/customer-a -s -v -H "host: baloo.devies.com"
 # Verify
-curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "Instanceid: 777"
+curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
 echo "GET baloo.devies.com/customer-a successfully included request header Instanceid 666"
 
 curl localhost/customer-b -s -H "host: baloo.devies.com" | grep "Instanceid: 888"

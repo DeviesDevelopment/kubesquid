@@ -7,15 +7,15 @@ Run the same application API for multiple tenants smoothly in kubernetes
 
 ## Running e2e tests
 
-From `/tests` run
+From repository root, run:
 
 ```
-./e2e-test.sh
+./run-e2e-test-locally.sh
 ```
 
 ### Requirements
 
 - Docker
-- kind TODO: Version
-- kubectl TODO: Version
-- helm: TODO: Version
+- kind
+- kubectl
+- helm
