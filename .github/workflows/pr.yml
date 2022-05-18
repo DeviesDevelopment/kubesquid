@@ -35,4 +35,5 @@ jobs:
       - uses: helm/kind-action@v1.2.0
         with:
           config: tests/cluster-config.yml
+          cluster_name: kind
       - run: ./e2e-test.sh
