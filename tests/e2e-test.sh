@@ -24,6 +24,7 @@ helm package ../ingress-supervisor/kubesquid-ingress-supervisor
 helm install --set image.tag=e2e-test kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
 kubectl apply -f test-configmap.yml
 # Install whoami service and annotate it with "squid"
+helm repo add cowboysysop https://cowboysysop.github.io/charts/
 helm install -f whoami-values.yml whoami cowboysysop/whoami
 kubectl wait --namespace default \
   --for=condition=ready pod \
