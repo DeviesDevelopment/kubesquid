@@ -32,7 +32,7 @@ sleep 5
 
 curl localhost/customer-a -s -v -H "host: baloo.devies.com"
 # Verify
-curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
+curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "Instanceid: 777"
 echo "GET baloo.devies.com/customer-a successfully included request header Instanceid 666"
 
 curl localhost/customer-b -s -H "host: baloo.devies.com" | grep "Instanceid: 888"
