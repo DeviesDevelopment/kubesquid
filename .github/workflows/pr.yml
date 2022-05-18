@@ -8,14 +8,14 @@ jobs:
   docker-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 
+      - uses: actions/checkout@v2
       - uses: hadolint/hadolint-action@v2.0.0
         with:
           dockerfile: ingress-supervisor/Dockerfile
   docker-build-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 
+      - uses: actions/checkout@v2
       - uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -29,10 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ingress-supervisor
+        working-directory: tests
     steps:
-      - uses: actions/checkout@v2 
+      - uses: actions/checkout@v2
       - uses: helm/kind-action@v1.2.0
-      - run: kubectl create secret docker-registry registry-secret --docker-server=https://index.docker.io/v1/ --docker-username=${{ secrets.DOCKERHUB_USERNAME }} --docker-password=${{ secrets.DOCKERHUB_TOKEN }}
-      - run: helm package kubesquid-ingress-supervisor
-      - run: helm upgrade --install kubesquid-ingress-supervisor kubesquid-ingress-supervisor-*.tgz
+      - run: ./e2e-test.sh
