@@ -27,7 +27,7 @@ public class ConfigmapWatcher : BackgroundService
     }
     private async Task WatchConfigmaps()
     {
-        var configMapResp = _client.CoreV1.ListNamespacedConfigMapWithHttpMessagesAsync(_targetNamespace, watch: true);
+        var configMapResp = _client.CoreV1.ListNamespacedConfigMapWithHttpMessagesAsync(_targetNamespace, fieldSelector: "metadata.name=kubesquid", watch: true);
         Console.WriteLine("Starting to watch the config map");
         await foreach (var (type, configMap) in configMapResp.WatchAsync<V1ConfigMap, V1ConfigMapList>())
         {
