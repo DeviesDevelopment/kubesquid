@@ -30,7 +30,7 @@ kubectl wait --namespace default \
 
 sleep 5
 
-# Verify
+# Verify create
 curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
 echo "GET baloo.devies.com/customer-a successfully included request header Instanceid 666"
 
@@ -42,3 +42,16 @@ echo "GET baloo.devies.com/customer-b successfully returned 404 Not Found"
 
 curl localhost/customer-a -s -H "host: baloo.devies.com" -H "Instanceid: 1337" | grep --invert-match "Instanceid: 1337"
 echo "GET baloo.devies.com/customer-a sucessfully returned request header Instanceid 666 (not 1337)"
+
+# Uninstall whoami
+helm uninstall whoami
+kubectl wait --for=delete pod --selector=app.kubernetes.io/name=whoami --timeout=60s
+
+sleep 5
+
+# Verify delete
+curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "404 Not Found"
+echo "GET baloo.devies.com/customer-a successfully returned 404 Not Found"
+
+curl localhost/customer-b -s -H "host: baloo.devies.com" | grep "404 Not Found"
+echo "GET baloo.devies.com/customer-b successfully returned 404 Not Found"
