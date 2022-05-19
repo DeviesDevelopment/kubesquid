@@ -102,21 +102,4 @@ public class LogicTests
             Path = path
         };
     }
-
-    private V1Service CreateService(string serviceName)
-    {
-        return new V1Service()
-        {
-            Metadata = new V1ObjectMeta()
-            {
-                Annotations = new Dictionary<string, string>
-                {
-                    { "squid", "true" },
-                },
-                Name = serviceName,
-                ClusterName = "my-cluster",
-                Uid = "test-uid",
-            }
-        };
-    }
 }
