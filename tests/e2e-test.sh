@@ -40,5 +40,5 @@ echo "GET baloo.devies.com/customer-b successfully included request header Insta
 curl localhost/customer-c -s -H "host: baloo.devies.com" | grep "404 Not Found"
 echo "GET baloo.devies.com/customer-b successfully returned 404 Not Found"
 
-curl localhost/customer-a -s -H "host: baloo.devies.com" -H "Instanceid: 1337" | grep "Instanceid: 666"
+curl localhost/customer-a -s -H "host: baloo.devies.com" -H "Instanceid: 1337" | grep --invert-match "Instanceid: 1337"
 echo "GET baloo.devies.com/customer-a sucessfully returned request header Instanceid 666 (not 1337)"
