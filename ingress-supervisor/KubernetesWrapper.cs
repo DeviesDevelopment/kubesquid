@@ -36,7 +36,7 @@ public class KubernetesWrapper
             .ToList();
     }
 
-    public async void CreateIngress(TenantConfig tenantConfig)
+    public async Task CreateIngress(TenantConfig tenantConfig)
     {
         var ingress = new V1Ingress()
         {
@@ -99,5 +99,10 @@ public class KubernetesWrapper
         };
 
         var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+    }
+
+    public async Task DeleteIngress(TenantConfig serviceConfig)
+    {
+        await _client.DeleteNamespacedIngressAsync(serviceConfig.GetIngressName(), _targetNamespace);
     }
 }

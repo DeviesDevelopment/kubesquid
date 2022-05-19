@@ -34,6 +34,7 @@ public class ServiceWatcher : BackgroundService
             await WatchServices();
         }
     }
+
     private async Task WatchServices()
     {
         var servicesListResp = _client.CoreV1.ListNamespacedServiceWithHttpMessagesAsync(_targetNamespace, watch: true);
@@ -41,35 +42,41 @@ public class ServiceWatcher : BackgroundService
         await foreach (var (type, service) in servicesListResp.WatchAsync<V1Service, V1ServiceList>())
         {
             Console.WriteLine($"Got Service Event of Type: {type} for Service: {service.Metadata.Name}");
+            if (service.Metadata?.Annotations?.ContainsKey("squid") != true)
+            {
+                Console.WriteLine($"Ignoring service {service.Metadata.Name} due to missing squid annotation");
+                continue;
+            }
+
+            var squidConfig = await _kubernetesWrapper.GetSquidConfig();
+            var serviceConfigs = squidConfig
+                .Where(config => config.ServiceName.Equals(service.Metadata.Name))
+                .ToList();
+            var allIngresses = await _kubernetesWrapper.GetIngresses();
+
             switch (type)
             {
                 case WatchEventType.Added:
-                    if (service.Metadata?.Annotations?.ContainsKey("squid") == true)
+                    foreach (var serviceConfig in serviceConfigs)
                     {
-                        var squidConfig = await _kubernetesWrapper.GetSquidConfig();
-                        var serviceConfigs = squidConfig
-                            .Where(config => config.ServiceName.Equals(service.Metadata.Name))
-                            .ToList();
-                        var allIngresses = await _kubernetesWrapper.GetIngresses();
-                        foreach (var serviceConfig in serviceConfigs)
+                        if (!_logic.ServiceHasIngress(allIngresses, serviceConfig))
                         {
-                            if (!_logic.ServiceHasIngress(allIngresses, serviceConfig))
-                            {
-                                _kubernetesWrapper.CreateIngress(serviceConfig);
-                            }
+                            await _kubernetesWrapper.CreateIngress(serviceConfig);
                             Console.WriteLine($"Created ingress for service: {serviceConfig.ServiceName}");
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine($"Ignoring service {service.Metadata.Name} due to missing squid annotation");
-                    }
-
                     break;
-                default:
+                case WatchEventType.Deleted:
+                    foreach (var serviceConfig in serviceConfigs)
+                    {
+                        if (_logic.ServiceHasIngress(allIngresses, serviceConfig))
+                        {
+                            await _kubernetesWrapper.DeleteIngress(serviceConfig);
+                            Console.WriteLine($"Deleted ingress for service: {serviceConfig.ServiceName}");
+                        }
+                    }
                     break;
             }
         }
     }
 }
-
