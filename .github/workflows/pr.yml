@@ -25,6 +25,12 @@ jobs:
           context: ingress-supervisor
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: dotnet test
+
   e2e-test:
     runs-on: ubuntu-latest
     defaults:
