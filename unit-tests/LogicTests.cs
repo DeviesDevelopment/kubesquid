@@ -1,50 +1,41 @@
 using System.Collections.ObjectModel;
-using System.Text.Json;
+using ingress_supervisor;
 using ingress_supervisor.Models;
-using k8s;
 using k8s.Models;
 
-namespace ingress_supervisor;
+namespace unit_tests;
 
-public class KubernetesWrapper
+public class LogicTests
 {
-    private const string ConfigMapName = "kubesquid";
-    private readonly Kubernetes _client;
-    private readonly string _targetNamespace;
+    private Logic _logic = new Logic();
 
-    public KubernetesWrapper(Kubernetes client, KubernetesClientConfiguration config)
+    [Fact]
+    public void ServiceHasIngress_IngressExists()
     {
-        _client = client;
-        _targetNamespace = config.Namespace;
+        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        Assert.True(_logic.ServiceHasIngress(ingresses, serviceConfig));
     }
 
-    public async Task<IList<V1Ingress>> GetIngresses()
+    [Fact]
+    public void ServiceHasIngresses_NoIngressesExists()
     {
-        var ingresses = await _client.ListNamespacedIngressAsync(_targetNamespace);
-        return ingresses.Items;
+        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasIngress(new List<V1Ingress>(), serviceConfig));
     }
 
-    public async Task<List<TenantConfig?>> GetSquidConfig()
+
+    private List<V1Ingress> CreateIngresses(string name, string instanceId, string host, string serviceName, int port, string path)
     {
-        var options = new JsonSerializerOptions
+        return new List<V1Ingress>()
         {
-            PropertyNameCaseInsensitive = true
-        };
-        var configMap = await _client.ReadNamespacedConfigMapAsync(ConfigMapName, _targetNamespace);
-        return configMap.Data
-            .Select(pair => JsonSerializer.Deserialize<TenantConfig>(pair.Value, options))
-            .ToList();
-    }
-
-    public async void CreateIngress(TenantConfig tenantConfig)
-    {
-        var ingress = new V1Ingress()
-        {
+            new V1Ingress()
+            {
             Kind = "Ingress",
             Metadata = new V1ObjectMeta()
             {
-                NamespaceProperty = _targetNamespace,
-                Name = tenantConfig.GetIngressName(),
+                NamespaceProperty = "default",
+                Name = name,
                 Labels = new Dictionary<string, string>()
             {
                 { "autocreated", "true" }, // TODO: Yeet me
@@ -57,7 +48,7 @@ public class KubernetesWrapper
                 {"nginx.ingress.kubernetes.io/use-regex", "true"},
                 {
                     $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
-                        proxy_set_header InstanceId {tenantConfig.InstanceId};
+                        proxy_set_header InstanceId {instanceId};
                     "
                 },
                 {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
@@ -70,23 +61,23 @@ public class KubernetesWrapper
             {
                 new V1IngressRule()
                 {
-                    Host = tenantConfig.HostName,
+                    Host = host,
                     Http = new V1HTTPIngressRuleValue()
                     {
                         Paths = new Collection<V1HTTPIngressPath>()
                         {
                             new V1HTTPIngressPath()
                             {
-                                Path = tenantConfig.Path,
+                                Path = path,
                                 PathType = "ImplementationSpecific",
                                 Backend = new V1IngressBackend()
                                 {
                                     Service = new V1IngressServiceBackend()
                                     {
-                                        Name = tenantConfig.ServiceName,
+                                        Name = serviceName,
                                         Port = new V1ServiceBackendPort()
                                         {
-                                            Number = tenantConfig.Port
+                                            Number = port
                                         }
                                     }
                                 }
@@ -94,10 +85,21 @@ public class KubernetesWrapper
                         }
                     }
                 }
+                }
             }
             }
         };
+    }
 
-        var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+    private TenantConfig CreateServiceConfig(string serviceName, string instanceId, string hostname, int port, string path)
+    {
+        return new TenantConfig()
+        {
+            ServiceName = serviceName,
+            InstanceId = instanceId,
+            HostName = hostname,
+            Port = port,
+            Path = path
+        };
     }
 }

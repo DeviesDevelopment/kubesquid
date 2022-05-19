@@ -26,4 +26,4 @@ metadata:
 rules:
   - apiGroups: [ "*" ]
     resources: [ "ingresses" ]
-    verbs: [ "create", "update", "delete" ]
+    verbs: [ "list", "create", "update", "delete" ]

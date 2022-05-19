@@ -8,6 +8,8 @@ public class TenantConfig
     public int Port { get; set; }
     public string Path { get; set; }
 
+    public string GetIngressName() => $"{ServiceName}-{InstanceId}-ingress";
+
     public override string ToString()
     {
         return $"ServiceName: {ServiceName}, InstanceId: {InstanceId}, HostName: {HostName}, Port: {Port}, Path: {Path}";
