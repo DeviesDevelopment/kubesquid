@@ -12,19 +12,16 @@ public class LogicTests
     [Fact]
     public void ServiceHasIngress_IngressExists()
     {
-        var service = CreateService("test-service");
-        var serviceConfigs = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses("test-service-666-ingress", "666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(_logic.ServiceHasIngress(service, ingresses, serviceConfigs));
+        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        Assert.True(_logic.ServiceHasIngress(ingresses, serviceConfig));
     }
 
     [Fact]
     public void ServiceHasIngresses_NoIngressesExists()
     {
-        var service = CreateService("test-service");
-        var serviceConfigs = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-
-        Assert.False(_logic.ServiceHasIngress(service, new List<V1Ingress>(), serviceConfigs));
+        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasIngress(new List<V1Ingress>(), serviceConfig));
     }
 
 
@@ -94,18 +91,15 @@ public class LogicTests
         };
     }
 
-    private List<TenantConfig> CreateServiceConfig(string serviceName, string instanceId, string hostname, int port, string path)
+    private TenantConfig CreateServiceConfig(string serviceName, string instanceId, string hostname, int port, string path)
     {
-        return new List<TenantConfig>()
+        return new TenantConfig()
         {
-            new TenantConfig()
-            {
-                ServiceName = serviceName,
-                InstanceId = instanceId,
-                HostName = hostname,
-                Port = port,
-                Path = path
-            }
+            ServiceName = serviceName,
+            InstanceId = instanceId,
+            HostName = hostname,
+            Port = port,
+            Path = path
         };
     }
 

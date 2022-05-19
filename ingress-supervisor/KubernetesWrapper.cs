@@ -44,7 +44,7 @@ public class KubernetesWrapper
             Metadata = new V1ObjectMeta()
             {
                 NamespaceProperty = _targetNamespace,
-                Name = $"{tenantConfig.ServiceName}-{tenantConfig.InstanceId}-ingress",
+                Name = tenantConfig.GetIngressName(),
                 Labels = new Dictionary<string, string>()
             {
                 { "autocreated", "true" }, // TODO: Yeet me
