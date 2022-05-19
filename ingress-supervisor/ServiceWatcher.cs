@@ -10,12 +10,14 @@ public class ServiceWatcher : BackgroundService
     private readonly Kubernetes _client;
     private readonly string _targetNamespace;
     private readonly KubernetesWrapper _kubernetesWrapper;
+    private readonly Logic _logic;
 
-    public ServiceWatcher(Kubernetes client, KubernetesClientConfiguration config, KubernetesWrapper kubernetesWrapper)
+    public ServiceWatcher(Kubernetes client, KubernetesClientConfiguration config, KubernetesWrapper kubernetesWrapper, Logic logic)
     {
         _client = client;
         _targetNamespace = config.Namespace;
         _kubernetesWrapper = kubernetesWrapper;
+        _logic = logic;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -48,12 +50,19 @@ public class ServiceWatcher : BackgroundService
                         var serviceConfigs = squidConfig
                             .Where(config => config.ServiceName.Equals(service.Metadata.Name))
                             .ToList();
-                        // TODO: Check if ingress already exist, for each service config
+                        var allIngresses = await _kubernetesWrapper.GetIngresses();
                         foreach (var serviceConfig in serviceConfigs)
                         {
-                            _kubernetesWrapper.CreateIngress(serviceConfig);
+                            if (!_logic.ServiceHasIngress(allIngresses, serviceConfig))
+                            {
+                                _kubernetesWrapper.CreateIngress(serviceConfig);
+                            }
                             Console.WriteLine($"Created ingress for service: {serviceConfig.ServiceName}");
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Ignoring service {service.Metadata.Name} due to missing squid annotation");
                     }
 
                     break;

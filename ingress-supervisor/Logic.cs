@@ -7,7 +7,7 @@ namespace ingress_supervisor;
 public class Logic
 {
 
-    public bool ServiceHasIngress(List<V1Ingress> ingresses, TenantConfig serviceConfig)
+    public bool ServiceHasIngress(IList<V1Ingress> ingresses, TenantConfig serviceConfig)
     {
         if (!ingresses.Any())
         {
