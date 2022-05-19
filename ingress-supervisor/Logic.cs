@@ -8,6 +8,11 @@ public class Logic
 
     public bool ServiceHasIngress(V1Service service, List<V1Ingress> ingresses, List<TenantConfig> serviceConfigs)
     {
+        if (!ingresses.Any() || !serviceConfigs.Any())
+        {
+            return false;
+        }
+
         return true;
     }
 
