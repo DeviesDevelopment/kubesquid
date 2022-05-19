@@ -1,0 +1,22 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=272725b1_002Ddbfd_002D4d90_002D9040_002D0e3f677decd1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ServiceHasIngresses_NoIngressesExists #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::24E2E4F4-FCFE-4853-BCA8-89FEE784F38E::net6.0::unit_tests.LogicTests.ServiceHasIngresses_NoIngressesExists&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2b234eb5_002Db107_002D490c_002D8af1_002D9170401910b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ServiceHasIngresses_NoIngressesExists #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::24E2E4F4-FCFE-4853-BCA8-89FEE784F38E::net6.0::unit_tests.LogicTests.ServiceHasIngresses_NoIngressesExists&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::24E2E4F4-FCFE-4853-BCA8-89FEE784F38E::net6.0::unit_tests.LogicTests.test&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=54be00b0_002D1169_002D4418_002D903d_002Df5a6ef4fe37e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ServiceHasIngresses_NoIngressesExists" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::24E2E4F4-FCFE-4853-BCA8-89FEE784F38E::net6.0::unit_tests.LogicTests.ServiceHasIngresses_NoIngressesExists&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=9b1a1026_002Da5e7_002D462f_002Dbb43_002D4e4e66734018/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ServiceHasIngresses_NoIngressesExists #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::24E2E4F4-FCFE-4853-BCA8-89FEE784F38E::net6.0::unit_tests.LogicTests.ServiceHasIngresses_NoIngressesExists&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
