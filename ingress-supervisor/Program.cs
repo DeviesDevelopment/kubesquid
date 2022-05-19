@@ -3,8 +3,7 @@ using ingress_supervisor;
 using k8s;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
-Console.WriteLine("Starting kubesquid");
+using Microsoft.Extensions.Logging;
 
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 var config = environment == "Development" ? KubernetesClientConfiguration.BuildConfigFromConfigFile() : KubernetesClientConfiguration.InClusterConfig();
@@ -18,7 +17,15 @@ var builder = new HostBuilder().ConfigureServices((hostContext, services) =>
     services.AddHostedService<ServiceWatcher>();
     services.AddHostedService<ConfigmapWatcher>();
 });
+builder.ConfigureLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddSimpleConsole(options =>
+    {
+        options.IncludeScopes = false;
+        options.TimestampFormat = "hh:mm:ss ";
+        options.SingleLine = true;
+    });
+});
 
 await builder.RunConsoleAsync();
-
-Console.WriteLine("Exiting kubeqsuid");
