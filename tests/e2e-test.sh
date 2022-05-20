@@ -30,18 +30,18 @@ kubectl wait --namespace default \
 
 sleep 5
 
-# Verify create
+# Verify create (triggered on new service)
 curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
-echo "GET baloo.devies.com/customer-a successfully included request header Instanceid 666"
-
 curl localhost/customer-b -s -H "host: baloo.devies.com" | grep "Instanceid: 888"
-echo "GET baloo.devies.com/customer-b successfully included request header Instanceid 888"
-
 curl localhost/customer-c -s -H "host: baloo.devies.com" | grep "404 Not Found"
-echo "GET baloo.devies.com/customer-b successfully returned 404 Not Found"
-
 curl localhost/customer-a -s -H "host: baloo.devies.com" -H "Instanceid: 1337" | grep --invert-match "Instanceid: 1337"
-echo "GET baloo.devies.com/customer-a sucessfully returned request header Instanceid 666 (not 1337)"
+
+# Update config with new service config
+kubectl apply -f test-configmap-extended.yml
+sleep 5
+
+# Verify create (triggered on config change)
+curl localhost/customer-c -s -H "host: mowgli.devies.com" | grep "Instanceid: 999"
 
 # Uninstall whoami
 helm uninstall whoami

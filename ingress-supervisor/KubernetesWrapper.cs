@@ -26,14 +26,8 @@ public class KubernetesWrapper
 
     public async Task<List<TenantConfig?>> GetSquidConfig()
     {
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
         var configMap = await _client.ReadNamespacedConfigMapAsync(ConfigMapName, _targetNamespace);
-        return configMap.Data
-            .Select(pair => JsonSerializer.Deserialize<TenantConfig>(pair.Value, options))
-            .ToList();
+        return TenantConfig.FromConfigMap(configMap);
     }
 
     public async Task CreateIngress(TenantConfig tenantConfig)
