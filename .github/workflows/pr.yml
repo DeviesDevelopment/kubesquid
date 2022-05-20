@@ -19,17 +19,17 @@ jobs:
           docker save --output ${{ env.IMAGE_NAME }}.tar ${{ env.IMAGE_NAME }}
       - uses: aquasecurity/trivy-action@master
         with:
-          input: ${IMAGE_NAME}.tar
+          input: ${{ env.IMAGE_NAME }}.tar
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-      - run: gzip -c ${IMAGE_NAME}.tar > ${IMAGE_NAME}.tar.gz
+      - run: gzip -c ${{ env.IMAGE_NAME }}.tar > ${{ env.IMAGE_NAME }}.tar.gz
       - uses: actions/upload-artifact@v3
         with:
-          name: ${IMAGE_NAME}.tar.gz
-          path: ${IMAGE_NAME}.tar.gz
+          name: ${{ env.IMAGE_NAME }}.tar.gz
+          path: ${{ env.IMAGE_NAME }}.tar.gz
 
   docker-build-push:
     runs-on: ubuntu-latest
