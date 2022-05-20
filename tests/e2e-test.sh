@@ -37,7 +37,7 @@ curl localhost/customer-c -s -H "host: baloo.devies.com" | grep "404 Not Found"
 curl localhost/customer-a -s -H "host: baloo.devies.com" -H "Instanceid: 1337" | grep --invert-match "Instanceid: 1337"
 
 # Update config with new service config
-kubectl apply -f test-configmap-b.yml
+kubectl apply -f test-configmap-extended.yml
 sleep 5
 
 # Verify create (triggered on config change)
