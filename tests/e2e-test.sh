@@ -2,7 +2,7 @@
 # Terminate if any command fails
 set -ex
 
-docker build --no-cache -t miledevies/kubesquid-ingress-supervisor:e2e-test ../ingress-supervisor
+IMAGE_TAG=$1
 
 # Setup NGINX Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
@@ -18,7 +18,7 @@ done
 kubectl version
 kind load docker-image miledevies/kubesquid-ingress-supervisor:e2e-test --name kind
 helm package ../ingress-supervisor/kubesquid-ingress-supervisor
-helm install --set image.tag=e2e-test kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
+helm install --set image.tag=$IMAGE_TAG kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
 kubectl apply -f test-configmap.yml
 # Install whoami service and annotate it with "squid"
 helm repo add cowboysysop https://cowboysysop.github.io/charts/

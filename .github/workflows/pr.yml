@@ -33,7 +33,7 @@ jobs:
 
   docker-push:
     runs-on: ubuntu-latest
-    needs: docker-build
+    needs: e2e-test
     steps:
       - uses: actions/download-artifact@v3
         with:
@@ -65,4 +65,10 @@ jobs:
         with:
           config: tests/cluster-config.yml
           cluster_name: kind
-      - run: ./e2e-test.sh
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.IMAGE_NAME }}.tar.gz
+      - run: |
+          docker image load --input ${{ env.IMAGE_NAME }}.tar.gz
+          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+      - run: ./e2e-test.sh ${{ github.event.number }}
