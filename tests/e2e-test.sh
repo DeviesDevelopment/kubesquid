@@ -43,13 +43,19 @@ sleep 5
 # Verify create (triggered on config change)
 curl localhost/customer-c -s -H "host: mowgli.devies.com" | grep "Instanceid: 999"
 
+# Update config to remove new service
+kubectl apply -f test-configmap.yml
+sleep 5
+
+# Verify delete (triggered on config change)
+curl localhost/customer-c -s -H "host: mowgli.devies.com" | grep "404 Not Found"
+
 # Uninstall whoami
 helm uninstall whoami
 kubectl wait --for=delete pod --selector=app.kubernetes.io/name=whoami --timeout=60s
-
 sleep 5
 
-# Verify delete
+# Verify delete (triggered on service delete)
 curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "404 Not Found"
 echo "GET baloo.devies.com/customer-a successfully returned 404 Not Found"
 
