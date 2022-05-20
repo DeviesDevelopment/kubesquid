@@ -1,0 +1,29 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kubesquid
+data:
+  kunda: |
+    {
+      "serviceName": "whoami",
+      "instanceId": "666",
+      "hostName": "baloo.devies.com",
+      "port": 80,
+      "path": "/customer-a"
+    }
+  kundb: |
+    {
+      "serviceName": "whoami",
+      "instanceId": "888",
+      "hostName": "baloo.devies.com",
+      "port": 80,
+      "path": "/customer-b"
+    }
+  kundc: |
+    {
+      "serviceName": "whoami",
+      "instanceId": "999",
+      "hostName": "mowgli.devies.com",
+      "port": 80,
+      "path": "/customer-c"
+    }
