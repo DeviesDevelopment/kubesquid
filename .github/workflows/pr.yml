@@ -15,8 +15,8 @@ jobs:
         with:
           dockerfile: ingress-supervisor/Dockerfile
       - run: |
-          docker build -f ingress-supervisor/Dockerfile -t ${IMAGE_NAME} ingress-supervisor
-          docker save --output ${IMAGE_NAME}.tar ${IMAGE_NAME} 
+          docker build -f ingress-supervisor/Dockerfile -t $IMAGE_NAME ingress-supervisor
+          docker save --output $IMAGE_NAME.tar $IMAGE_NAME
       - uses: aquasecurity/trivy-action@master
         with:
           input: ${IMAGE_NAME}.tar
