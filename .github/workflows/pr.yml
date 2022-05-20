@@ -7,20 +7,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ingress-supervisor-${{ github.event.number }}
     steps:
       - uses: actions/checkout@v2
       - uses: hadolint/hadolint-action@v2.0.0
         with:
           dockerfile: ingress-supervisor/Dockerfile
       - run: |
-          IMAGE_NAME=ingress-supervisor-${{ github.event.number }}
           docker build -f ingress-supervisor/Dockerfile -t ${IMAGE_NAME} ingress-supervisor
           docker save --output ${IMAGE_NAME}.tar ${IMAGE_NAME} 
-          gzip -c ${IMAGE_NAME}.tar > ${IMAGE_NAME}.tar.gz
+      - uses: aquasecurity/trivy-action@master
+        with:
+          input: ${IMAGE_NAME}.tar
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      - run: gzip -c ${IMAGE_NAME}.tar > ${IMAGE_NAME}.tar.gz
       - uses: actions/upload-artifact@v3
         with:
-          name: ingress-supervisor.tar.gz
-          path: ingress-supervisor-${{ github.event.number }}.tar.gz
+          name: ${IMAGE_NAME}.tar.gz
+          path: ${IMAGE_NAME}.tar.gz
 
   docker-build-push:
     runs-on: ubuntu-latest
