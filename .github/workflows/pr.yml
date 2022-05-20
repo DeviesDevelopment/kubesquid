@@ -3,28 +3,50 @@ on:
   pull_request:
     branches:
       - master
+env:
+  IMAGE_NAME: ingress-supervisor-${{ github.event.number }}
 
 jobs:
-  docker-lint:
+  docker-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: hadolint/hadolint-action@v2.0.0
         with:
           dockerfile: ingress-supervisor/Dockerfile
-  docker-build-push:
+      - run: |
+          docker build -f ingress-supervisor/Dockerfile -t ${{ env.IMAGE_NAME }} ingress-supervisor
+          docker save --output ${{ env.IMAGE_NAME }}.tar ${{ env.IMAGE_NAME }}
+      - uses: aquasecurity/trivy-action@master
+        with:
+          input: ${{ env.IMAGE_NAME }}.tar
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+      - run: gzip -c ${{ env.IMAGE_NAME }}.tar > ${{ env.IMAGE_NAME }}.tar.gz
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.IMAGE_NAME }}.tar.gz
+          path: ${{ env.IMAGE_NAME }}.tar.gz
+
+  docker-push:
     runs-on: ubuntu-latest
+    needs: e2e-test
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.IMAGE_NAME }}.tar.gz
       - uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v3
-        with:
-          context: ingress-supervisor
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+      - run: |
+          docker image load --input ${{ env.IMAGE_NAME }}.tar.gz
+          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+
   unit-test:
     runs-on: ubuntu-latest
     steps:
@@ -32,14 +54,19 @@ jobs:
       - run: dotnet test
 
   e2e-test:
+    needs: docker-build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tests
     steps:
       - uses: actions/checkout@v2
       - uses: helm/kind-action@v1.2.0
         with:
           config: tests/cluster-config.yml
           cluster_name: kind
-      - run: ./e2e-test.sh
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.IMAGE_NAME }}.tar.gz
+      - run: |
+          docker image load --input ${{ env.IMAGE_NAME }}.tar.gz
+          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+      - run: ./e2e-test.sh ${{ github.event.number }}
+        working-directory: tests
