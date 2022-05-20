@@ -14,7 +14,7 @@ jobs:
           dockerfile: ingress-supervisor/Dockerfile
       - run: |
           IMAGE_NAME=ingress-supervisor-${{ github.event.number }}
-          docker build -f ingress-supervisor/Dockerfile -t ${IMAGE_NAME}
+          docker build -f ingress-supervisor/Dockerfile -t ${IMAGE_NAME} .
           docker save --output ${IMAGE_NAME}.tar ${IMAGE_TAG} 
           gzip -c ${IMAGE_NAME}.tar > ${IMAGE_NAME}.tar.gz
       - uses: actions/upload-artifact@v3
