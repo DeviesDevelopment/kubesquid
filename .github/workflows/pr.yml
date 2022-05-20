@@ -7,7 +7,7 @@ env:
   IMAGE_NAME: ingress-supervisor-${{ github.event.number }}
 
 jobs:
-  build:
+  docker-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -31,19 +31,22 @@ jobs:
           name: ${{ env.IMAGE_NAME }}.tar.gz
           path: ${{ env.IMAGE_NAME }}.tar.gz
 
-  docker-build-push:
-    runs-on: ubuntu-latest
+  docker-push:
+    runs-on: ubuntu-22.04
+    needs: docker-build
     steps:
-      - uses: actions/checkout@v2
-      - uses: docker/login-action@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.IMAGE_NAME }}.tar.gz
+      - uses: docker/login-action @v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v3
-        with:
-          context: ingress-supervisor
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+      - run: |
+          docker image load --input ${{ env.IMAGE_NAME }}.tar.gz
+          docker image tag ${{ env.IMAGE_NAME }}.tar.gz ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+
   unit-test:
     runs-on: ubuntu-latest
     steps:
