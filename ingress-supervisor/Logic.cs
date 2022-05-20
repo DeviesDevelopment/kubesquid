@@ -20,4 +20,15 @@ public class Logic
         return matchingIngresses.Any();
     }
 
+    public bool IngressHasServiceConfig(V1Ingress ingress, IList<TenantConfig> squidConfig)
+    {
+        if (!"kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
+        {
+            return false;
+        }
+
+        var matchingServiceConfigs = squidConfig
+            .Where(serviceConfig => serviceConfig.GetIngressName().Equals(ingress.Metadata.Name));
+        return matchingServiceConfigs.Any();
+    }
 }
