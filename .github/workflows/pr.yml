@@ -44,7 +44,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - run: |
           docker image load --input ${{ env.IMAGE_NAME }}.tar.gz
-          docker image tag ${{ env.IMAGE_NAME }}.tar.gz ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
 
   unit-test:
@@ -54,6 +54,7 @@ jobs:
       - run: dotnet test
 
   e2e-test:
+    needs: docker-build
     runs-on: ubuntu-latest
     defaults:
       run:
