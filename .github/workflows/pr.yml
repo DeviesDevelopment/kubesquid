@@ -20,7 +20,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ingress-supervisor.tar.gz
-          path: ingress-supervisor/ingress-supervisor.tar.gz
+          path: ingress-supervisor-${{ github.event.number }}.tar.gz
 
   docker-build-push:
     runs-on: ubuntu-latest
