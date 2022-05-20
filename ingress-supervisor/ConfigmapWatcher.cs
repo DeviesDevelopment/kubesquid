@@ -42,17 +42,22 @@ public class ConfigmapWatcher : BackgroundService
             switch (type)
             {
                 case WatchEventType.Modified:
-                    var squidConfig = TenantConfig.FromConfigMap(configMap);
+                    IEnumerable<TenantConfig> squidConfig = TenantConfig.FromConfigMap(configMap)
+                        .Where(config => config != null)!; // TODO: Remove ! when we handle invalid config
                     var allIngresses = await _kubernetesWrapper.GetIngresses();
                     foreach (var serviceConfig in squidConfig)
                     {
-                        if (serviceConfig == null)
-                        {
-                            continue;
-                        }
                         if (!_logic.ServiceHasIngress(allIngresses, serviceConfig))
                         {
                             await _kubernetesWrapper.CreateIngress(serviceConfig);
+                        }
+                    }
+
+                    foreach (var ingress in allIngresses)
+                    {
+                        if (!_logic.IngressHasServiceConfig(ingress, squidConfig.ToList()))
+                        {
+                            await _kubernetesWrapper.DeleteIngress(ingress.Metadata.Name);
                         }
                     }
                     break;

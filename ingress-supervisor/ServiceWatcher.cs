@@ -74,7 +74,7 @@ public class ServiceWatcher : BackgroundService
                     {
                         if (_logic.ServiceHasIngress(allIngresses, serviceConfig))
                         {
-                            await _kubernetesWrapper.DeleteIngress(serviceConfig);
+                            await _kubernetesWrapper.DeleteIngress(serviceConfig.GetIngressName());
                             _logger.LogInformation("Deleted ingress for service: {}", serviceConfig.ServiceName);
                         }
                     }

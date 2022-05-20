@@ -95,8 +95,8 @@ public class KubernetesWrapper
         var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
     }
 
-    public async Task DeleteIngress(TenantConfig serviceConfig)
+    public async Task DeleteIngress(string ingressName)
     {
-        await _client.DeleteNamespacedIngressAsync(serviceConfig.GetIngressName(), _targetNamespace);
+        await _client.DeleteNamespacedIngressAsync(ingressName, _targetNamespace);
     }
 }
