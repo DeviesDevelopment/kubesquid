@@ -34,6 +34,14 @@ public class LogicTests
     }
 
     [Fact]
+    public void ServiceHasMatchingIngress_InstanceIdMismatch()
+    {
+        var serviceConfig = CreateServiceConfig("test-service", "some-new-instance-id", "mowgli.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
+    }
+
+    [Fact]
     public void ServiceHasMatchingIngresses_NoIngressesExists()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
