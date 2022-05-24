@@ -11,7 +11,8 @@ public class Logic
     {
         var matchingIngresses = ingresses
             .Where(ingress => "kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
-            .Where(ingress => ingress.Spec.Rules.First().Host.Equals(serviceConfig.HostName));
+            .Where(ingress => ingress.Spec.Rules.First().Host.Equals(serviceConfig.HostName))
+            .Where(ingress => ingress.Spec.Rules.First().Http.Paths.First().Path.Equals(serviceConfig.Path));
         return matchingIngresses.Any();
     }
 

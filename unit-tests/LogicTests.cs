@@ -18,6 +18,14 @@ public class LogicTests
     }
 
     [Fact]
+    public void ServiceHasMatchingIngress_PathMismatch()
+    {
+        var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/some-new-path");
+        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
+    }
+
+    [Fact]
     public void ServiceHasIngress_IngressExists()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
@@ -54,53 +62,52 @@ public class LogicTests
         {
             new V1Ingress()
             {
-            Kind = "Ingress",
-            Metadata = new V1ObjectMeta()
-            {
-                NamespaceProperty = "default",
-                Name = name,
-                Labels = new Dictionary<string, string>()
-            {
-                { "autocreated", "true" }, // TODO: Yeet me
-                { "app.kubernetes.io/created-by", "kubesquid" }
-            },
-                Annotations = new Dictionary<string, string>()
-            {
-                {"kubernetes.io/ingress.class", "nginx"},
-                {"nginx.ingress.kubernetes.io/rewrite-target", "/$1"},
-                {"nginx.ingress.kubernetes.io/use-regex", "true"},
+                Kind = "Ingress",
+                Metadata = new V1ObjectMeta()
                 {
-                    $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
+                    NamespaceProperty = "default",
+                    Name = name,
+                    Labels = new Dictionary<string, string>()
+                    {
+                        { "autocreated", "true" }, // TODO: Yeet me
+                        { "app.kubernetes.io/created-by", "kubesquid" }
+                    },
+                    Annotations = new Dictionary<string, string>()
+                    {
+                        { "kubernetes.io/ingress.class", "nginx" },
+                        { "nginx.ingress.kubernetes.io/rewrite-target", "/$1" },
+                        { "nginx.ingress.kubernetes.io/use-regex", "true" },
+                        {
+                            $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
                         proxy_set_header InstanceId {instanceId};
                     "
+                        },
+                        { "nginx.ingress.kubernetes.io/proxy-body-size", "600m" },
+                        { "nginx.org/client-max-body-size", "600m" }
+                    }
                 },
-                {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
-                {"nginx.org/client-max-body-size", "600m"}
-            }
-            },
-            Spec = new V1IngressSpec()
-            {
-                Rules = new List<V1IngressRule>()
-            {
-                new V1IngressRule()
+                Spec = new V1IngressSpec()
                 {
-                    Host = host,
-                    Http = new V1HTTPIngressRuleValue()
+                    Rules = new List<V1IngressRule>()
                     {
-                        Paths = new Collection<V1HTTPIngressPath>()
+                        new V1IngressRule()
                         {
-                            new V1HTTPIngressPath()
+                            Host = host,
+                            Http = new V1HTTPIngressRuleValue()
                             {
-                                Path = path,
-                                PathType = "ImplementationSpecific",
-                                Backend = new V1IngressBackend()
+                                Paths = new Collection<V1HTTPIngressPath>()
                                 {
-                                    Service = new V1IngressServiceBackend()
+                                    new V1HTTPIngressPath()
                                     {
-                                        Name = serviceName,
-                                        Port = new V1ServiceBackendPort()
+                                        Path = path,
+                                        PathType = "ImplementationSpecific",
+                                        Backend = new V1IngressBackend()
                                         {
-                                            Number = port
+                                            Service = new V1IngressServiceBackend()
+                                            {
+                                                Name = serviceName,
+                                                Port = new V1ServiceBackendPort() { Number = port }
+                                            }
                                         }
                                     }
                                 }
@@ -108,8 +115,6 @@ public class LogicTests
                         }
                     }
                 }
-                }
-            }
             }
         };
     }
