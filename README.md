@@ -2,24 +2,20 @@
 
 **NOTE**: Kubesquid version 0.0.1 is still being developed, hence kubesquid should not be used in production, yet.
 
-Run the same application API for multiple tenants smoothly in kubernetes
-
-Kubesquid is a white label solution for external access to services in a Kubernetes cluster via HTTP and HTTPS.
+Kubesquid is a white label solution for external access to services in a Kubernetes cluster via HTTP and HTTPS. Kubesquid manages ingresses based on your configuration and what services are currently deployed to your cluster.
 
 ## Requirements
 
-[Helm](https://helm.sh/docs/intro/install/)
+- [Helm](https://helm.sh/docs/intro/install/)
+- Running Kubernetes Cluster
 
 ## Installation
 
-**TODO**
-
-But, probably something like
-
+From source:
 ```
-helm repo add devies https://charts.devies.com
-helm install kubesquid devies/kubesquid
-```
+helm package ingress-supervisor/kubesquid-ingress-supervisor
+helm install kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
+````
 
 ## Get started
 
@@ -36,15 +32,15 @@ data:
     {
       "serviceName": "<name-of-a-service-in-the-cluster>",
       "instanceId": "<id-to-pass-down-to-service>",
-      "hostName": "<required-hostname-to-reach-service>",
+      "hostName": "<ingress-rule-host>",
       "port": "<port-for-the-service>",
-      "path": "<TODO>
+      "path": "<ingress-rule-path>"
     }
 ```
 
-TODO: Add much more to this section... And examples
+TODO: Add much more to this section...
 
-## Development
+## Development Setup
 
 ### Requirements
 
