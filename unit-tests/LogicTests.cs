@@ -34,18 +34,10 @@ public class LogicTests
     }
 
     [Fact]
-    public void ServiceHasIngress_IngressExists()
+    public void ServiceHasMatchingIngresses_NoIngressesExists()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(_logic.ServiceHasIngress(ingresses, serviceConfig));
-    }
-
-    [Fact]
-    public void ServiceHasIngresses_NoIngressesExists()
-    {
-        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        Assert.False(_logic.ServiceHasIngress(new List<V1Ingress>(), serviceConfig));
+        Assert.False(_logic.ServiceHasMatchingIngress(new List<V1Ingress>(), serviceConfig));
     }
 
     [Fact]
