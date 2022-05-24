@@ -21,7 +21,7 @@ helm repo add devies https://charts.devies.com
 helm install kubesquid devies/kubesquid
 ```
 
-## How do I use kubesquid?
+## Get started
 
 Kubesquid handles [https://kubernetes.io/docs/concepts/services-networking/ingress/](ingresses) in the cluster, based on a configuration. When kubequid gets installed to the cluster, a few kubernetes resources will be created, but most important the following two.
 
