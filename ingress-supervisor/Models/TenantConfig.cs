@@ -11,6 +11,7 @@ public class TenantConfig
 
     public string HostName { get; set; }
 
+    // TODO: Do we need to have port in config?
     public int Port { get; set; }
 
     public string Path { get; set; }
