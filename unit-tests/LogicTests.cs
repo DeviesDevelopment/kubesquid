@@ -10,6 +10,14 @@ public class LogicTests
     private Logic _logic = new Logic();
 
     [Fact]
+    public void ServiceHasMatchingIngress_HostMismatch()
+    {
+        var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
+    }
+
+    [Fact]
     public void ServiceHasIngress_IngressExists()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");

@@ -7,6 +7,14 @@ namespace ingress_supervisor;
 public class Logic
 {
 
+    public bool ServiceHasMatchingIngress(IList<V1Ingress> ingresses, TenantConfig serviceConfig)
+    {
+        var matchingIngresses = ingresses
+            .Where(ingress => "kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
+            .Where(ingress => ingress.Spec.Rules.First().Host.Equals(serviceConfig.HostName));
+        return matchingIngresses.Any();
+    }
+
     public bool ServiceHasIngress(IList<V1Ingress> ingresses, TenantConfig serviceConfig)
     {
         if (!ingresses.Any())
