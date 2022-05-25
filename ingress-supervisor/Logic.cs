@@ -31,7 +31,13 @@ public class Logic
 
         var matchingServiceConfigs = squidConfig
             .Where(serviceConfig => serviceConfig.HostName.Equals(ingress.Spec.Rules.First().Host))
-            .Where(serviceConfig => serviceConfig.Path.Equals(ingress.Spec.Rules.First().Http.Paths.First().Path));
+            .Where(serviceConfig => serviceConfig.Path.Equals(ingress.Spec.Rules.First().Http.Paths.First().Path))
+            .Where(serviceConfig =>
+            {
+                if (!ingress.Metadata.Annotations.ContainsKey("nginx.ingress.kubernetes.io/configuration-snippet"))
+                    return false;
+                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.InstanceId);
+            });
 
         return matchingServiceConfigs.Any();
     }
