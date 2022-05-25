@@ -71,6 +71,14 @@ public class LogicTests
         Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
     }
 
+    [Fact]
+    public void IngressHasMatchingServiceConfig_PathMismatch()
+    {
+        var ingress = CreateIngresses("test-service-666-ingress", "666", "mowgli.devies.com", "test-service", 80, "/some/other/path").First();
+        var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+    }
+
 
     private List<V1Ingress> CreateIngresses(string name, string instanceId, string host, string serviceName, int port, string path)
     {
