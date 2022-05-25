@@ -16,7 +16,7 @@ public class TenantConfig
 
     public string Path { get; set; }
 
-    public string GetIngressName() => $"{ServiceName}-{InstanceId}-ingress";
+    public string GetIngressName() => $"{ServiceName}-{InstanceId}-ingress-{Guid.NewGuid().ToString("n").Substring(0, 8)}";
 
     public override string ToString()
     {

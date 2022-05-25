@@ -92,11 +92,27 @@ public class KubernetesWrapper
             }
         };
 
-        var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+        try
+        {
+            var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+        }
+        catch (Exception e)
+        {
+           Console.WriteLine(e);
+        }
+
     }
 
     public async Task DeleteIngress(string ingressName)
     {
-        await _client.DeleteNamespacedIngressAsync(ingressName, _targetNamespace);
+        try
+        {
+            await _client.DeleteNamespacedIngressAsync(ingressName, _targetNamespace);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
     }
 }

@@ -44,13 +44,14 @@ public class ServiceWatcher : BackgroundService
         _logger.LogInformation("Starting to watch services");
         await foreach (var (type, service) in servicesListResp.WatchAsync<V1Service, V1ServiceList>())
         {
+
             _logger.LogInformation("Got Service Event of Type: {} for Service: {}", type, service.Metadata.Name);
             if (service.Metadata?.Annotations?.ContainsKey("squid") != true)
             {
                 _logger.LogInformation("Ignoring service {} due to missing squid annotation", service.Metadata.Name);
                 continue;
             }
-
+            // TODO: Check that configmap exists.
             var squidConfig = await _kubernetesWrapper.GetSquidConfig();
             var serviceConfigs = squidConfig
                 .Where(config => config.ServiceName.Equals(service.Metadata.Name))
