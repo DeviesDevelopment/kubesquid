@@ -3,19 +3,22 @@ using System.Text.Json;
 using ingress_supervisor.Models;
 using k8s;
 using k8s.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ingress_supervisor;
 
 public class KubernetesWrapper
 {
+    private readonly ILogger<KubernetesWrapper> _logger;
     private const string ConfigMapName = "kubesquid";
     private readonly Kubernetes _client;
     private readonly string _targetNamespace;
 
-    public KubernetesWrapper(Kubernetes client, KubernetesClientConfiguration config)
+    public KubernetesWrapper(Kubernetes client, KubernetesClientConfiguration config, ILogger<KubernetesWrapper> logger)
     {
         _client = client;
         _targetNamespace = config.Namespace;
+        _logger = logger;
     }
 
     public async Task<IList<V1Ingress>> GetIngresses()
@@ -95,10 +98,11 @@ public class KubernetesWrapper
         try
         {
             var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+            _logger.LogInformation("Successfully created ingress: {}", ingress.Metadata.Name);
         }
         catch (Exception e)
         {
-           Console.WriteLine(e);
+            _logger.LogError("Failed to create ingress {}, due to: {}", ingress.Metadata.Name, e.Message);
         }
 
     }
@@ -108,10 +112,11 @@ public class KubernetesWrapper
         try
         {
             await _client.DeleteNamespacedIngressAsync(ingressName, _targetNamespace);
+            _logger.LogInformation("Successfully deleted ingress: {}", ingressName);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("Failed to delete ingress {}, due to: {}", ingressName, e.Message);
         }
 
     }

@@ -65,7 +65,7 @@ sleep 5
 
 # Verify delete (triggered on service delete)
 curl localhost/customer-d -s -H "host: baloo.devies.com" | grep "404 Not Found"
-echo "GET baloo.devies.com/customer-a successfully returned 404 Not Found"
+echo "GET baloo.devies.com/customer-d successfully returned 404 Not Found"
 
 curl localhost/customer-b -s -H "host: bagheera.devies.com" | grep "404 Not Found"
 echo "GET baloo.devies.com/customer-b successfully returned 404 Not Found"
