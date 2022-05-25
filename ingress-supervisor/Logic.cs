@@ -22,20 +22,7 @@ public class Logic
         return matchingIngresses.Any();
     }
 
-    public bool ServiceHasIngress(IList<V1Ingress> ingresses, TenantConfig serviceConfig)
-    {
-        if (!ingresses.Any())
-        {
-            return false;
-        }
-
-        var matchingIngresses = ingresses
-                .Where(ingress => "kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
-                .Where(ingress => ingress.Metadata.Name.Equals(serviceConfig.GetIngressName()));
-        return matchingIngresses.Any();
-    }
-
-    public bool IngressHasServiceConfig(V1Ingress ingress, IList<TenantConfig> squidConfig)
+    public bool IngressHasMatchingServiceConfig(V1Ingress ingress, IList<TenantConfig> squidConfig)
     {
         if (!"kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
         {
@@ -43,7 +30,7 @@ public class Logic
         }
 
         var matchingServiceConfigs = squidConfig
-            .Where(serviceConfig => serviceConfig.GetIngressName().Equals(ingress.Metadata.Name));
+            .Where(serviceConfig => serviceConfig.HostName.Equals(ingress.Spec.Rules.First().Host));
         return matchingServiceConfigs.Any();
     }
 }

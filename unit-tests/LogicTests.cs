@@ -49,18 +49,26 @@ public class LogicTests
     }
 
     [Fact]
-    public void IngressHasServiceConfig_ServiceExist()
+    public void IngressHasMatchingServiceConfig_Matching()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
         var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(_logic.IngressHasServiceConfig(ingresses.First(), new List<TenantConfig> { serviceConfig }));
+        Assert.True(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig> { serviceConfig }));
     }
 
     [Fact]
-    public void IngressHasServiceConfig_NoServiceExist()
+    public void IngressHasMatchingServiceConfig_NoServiceExist()
     {
         var ingresses = CreateIngresses("test-service-666-ingress", "666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.False(_logic.IngressHasServiceConfig(ingresses.First(), new List<TenantConfig>()));
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig>()));
+    }
+
+    [Fact]
+    public void IngressHasMatchingServiceConfig_HostMismatch()
+    {
+        var ingress = CreateIngresses("test-service-666-ingress", "666", "baloo.devies.com", "test-service", 80, "/customer-a").First();
+        var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
     }
 
 

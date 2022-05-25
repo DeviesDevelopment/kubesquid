@@ -62,7 +62,7 @@ public class ServiceWatcher : BackgroundService
                 case WatchEventType.Added:
                     foreach (var serviceConfig in serviceConfigs)
                     {
-                        if (!_logic.ServiceHasIngress(allIngresses, serviceConfig))
+                        if (!_logic.ServiceHasMatchingIngress(allIngresses, serviceConfig))
                         {
                             await _kubernetesWrapper.CreateIngress(serviceConfig);
                             _logger.LogInformation("Created ingress for service: {}", service.Metadata.Name);
@@ -72,7 +72,7 @@ public class ServiceWatcher : BackgroundService
                 case WatchEventType.Deleted:
                     foreach (var serviceConfig in serviceConfigs)
                     {
-                        if (_logic.ServiceHasIngress(allIngresses, serviceConfig))
+                        if (_logic.ServiceHasMatchingIngress(allIngresses, serviceConfig))
                         {
                             await _kubernetesWrapper.DeleteIngress(serviceConfig.GetIngressName());
                             _logger.LogInformation("Deleted ingress for service: {}", serviceConfig.ServiceName);
