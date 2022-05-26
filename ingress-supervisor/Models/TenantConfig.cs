@@ -23,7 +23,7 @@ public class TenantConfig
         var source = Encoding.ASCII.GetBytes($"{ServiceName}{InstanceId}{HostName}{Port}{Path}");
         var hash = SHA256.Create().ComputeHash(source);
         return $"{ServiceName}-{InstanceId}-ingress-{BitConverter.ToString(hash).Replace("-", string.Empty)}"
-            .Substring(0, 63)
+            .Substring(0, 253)
             .ToLower();
     }
 
