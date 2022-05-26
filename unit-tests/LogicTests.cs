@@ -86,7 +86,6 @@ public class LogicTests
         Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
     }
 
-
     private List<V1Ingress> CreateIngresses(string name, string instanceId, string host, string serviceName, int port, string path)
     {
         return new List<V1Ingress>()

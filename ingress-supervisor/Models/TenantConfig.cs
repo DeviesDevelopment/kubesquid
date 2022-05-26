@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using k8s.Models;
 
@@ -16,7 +18,14 @@ public class TenantConfig
 
     public string Path { get; set; }
 
-    public string GetIngressName() => $"{ServiceName}-{InstanceId}-ingress-{Guid.NewGuid().ToString("n").Substring(0, 8)}";
+    public string GetIngressName()
+    {
+        var source = Encoding.ASCII.GetBytes($"{ServiceName}{InstanceId}{HostName}{Port}{Path}");
+        var hash = SHA256.Create().ComputeHash(source);
+        return $"{ServiceName}-{InstanceId}-ingress-{BitConverter.ToString(hash).Replace("-", string.Empty)}"
+            .Substring(0, 63)
+            .ToLower();
+    }
 
     public override string ToString()
     {
