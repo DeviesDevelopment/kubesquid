@@ -7,7 +7,7 @@ namespace ingress_supervisor.Models;
 
 public class TenantConfig
 {
-    private const int IngressNameMaxLength = 253;
+    public const int IngressNameMaxLength = 253;
     public string ServiceName { get; set; }
 
     public string InstanceId { get; set; }
@@ -22,9 +22,10 @@ public class TenantConfig
     public string GetIngressName()
     {
         var source = Encoding.ASCII.GetBytes($"{ServiceName}{InstanceId}{HostName}{Port}{Path}");
-        var hash = BitConverter.ToString(SHA256.Create().ComputeHash(source)).Replace("-", string.Empty);
-        var ingressName = $"{ServiceName}-{InstanceId}-ingress-{hash}".ToLower();
-        return ingressName.Length <= IngressNameMaxLength ? ingressName : ingressName.Substring(0, IngressNameMaxLength);
+        var hash = BitConverter.ToString(SHA1.Create().ComputeHash(source)).Replace("-", string.Empty).ToLower();
+        var remainingLength = IngressNameMaxLength - hash.Length;
+        var prefix = $"{ServiceName}-{InstanceId}";
+        return prefix.Length <= remainingLength - 1? $"{prefix}-{hash}" : $"{prefix.Substring(0, remainingLength)}-{hash}";
     }
 
     public override string ToString()

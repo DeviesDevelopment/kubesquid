@@ -12,7 +12,7 @@ public class TenantConfigTests
         {
             HostName = "shere-khan.devies.com",
             Path = "/my-path",
-            InstanceId = Guid.NewGuid().ToString(),
+            InstanceId = "666",
             Port = 80,
             ServiceName = "some-backend-service"
         };
@@ -20,7 +20,7 @@ public class TenantConfigTests
         {
             HostName = "shere-khan.devies.com",
             Path = "/my-path",
-            InstanceId = tenantConfig.InstanceId,
+            InstanceId = "666",
             Port = 80,
             ServiceName = "some-backend-service"
         };
@@ -35,11 +35,27 @@ public class TenantConfigTests
         {
             HostName = "shere-khan.devies.com",
             Path = "/my-path",
-            InstanceId = Guid.NewGuid().ToString(),
+            InstanceId = "666",
             Port = 80,
             ServiceName = "some-backend-service"
         }.GetIngressName();
         Assert.Matches(new Regex(@"^[a-z0-9][a-z0-9\-\.]*[a-z0-9]$"), ingressName);
-        Assert.InRange(ingressName.Length, 1, 253);
+        Assert.InRange(ingressName.Length, 1, TenantConfig.IngressNameMaxLength);
+    }
+
+    [Fact]
+    public void TenantConfig_IngressNameShouldBeTruncatedButStillContainFullHash()
+    {
+        var veryLongServiceName = string.Concat(Enumerable.Repeat("some-backend-service", 13));
+        var ingressName = new TenantConfig()
+        {
+            HostName = "shere-khan.devies.com",
+            Path = "/my-path",
+            InstanceId = "666",
+            Port = 80,
+            ServiceName = veryLongServiceName
+        }.GetIngressName();
+        var expectedHash = "b538347bddfcb2adc74477f5fdd1be5479b692a6";
+        Assert.Contains(expectedHash, ingressName);
     }
 }
