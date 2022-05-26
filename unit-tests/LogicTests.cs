@@ -13,7 +13,7 @@ public class LogicTests
     public void ServiceHasMatchingIngress_Matching()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
         Assert.True(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
@@ -21,7 +21,7 @@ public class LogicTests
     public void ServiceHasMatchingIngress_HostMismatch()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
         Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
@@ -29,7 +29,7 @@ public class LogicTests
     public void ServiceHasMatchingIngress_PathMismatch()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/some-new-path");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
         Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
@@ -37,7 +37,7 @@ public class LogicTests
     public void ServiceHasMatchingIngress_InstanceIdMismatch()
     {
         var serviceConfig = CreateServiceConfig("test-service", "some-new-instance-id", "mowgli.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
         Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
@@ -52,21 +52,21 @@ public class LogicTests
     public void IngressHasMatchingServiceConfig_Matching()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
         Assert.True(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig> { serviceConfig }));
     }
 
     [Fact]
     public void IngressHasMatchingServiceConfig_NoServiceExist()
     {
-        var ingresses = CreateIngresses("test-service-666-ingress", "666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
         Assert.False(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig>()));
     }
 
     [Fact]
     public void IngressHasMatchingServiceConfig_HostMismatch()
     {
-        var ingress = CreateIngresses("test-service-666-ingress", "666", "baloo.devies.com", "test-service", 80, "/customer-a").First();
+        var ingress = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a").First();
         var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
         Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
     }
@@ -74,19 +74,20 @@ public class LogicTests
     [Fact]
     public void IngressHasMatchingServiceConfig_PathMismatch()
     {
-        var ingress = CreateIngresses("test-service-666-ingress", "666", "mowgli.devies.com", "test-service", 80, "/some/other/path").First();
-        var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
-        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
-    }
-    [Fact]
-    public void IngressHasMatchingServiceConfig_InstanceIdMismatch()
-    {
-        var ingress = CreateIngresses("test-service-666-ingress", "999", "mowgli.devies.com", "test-service", 80, "/customer-a").First();
+        var ingress = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/some/other/path").First();
         var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
         Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
     }
 
-    private List<V1Ingress> CreateIngresses(string name, string instanceId, string host, string serviceName, int port, string path)
+    [Fact]
+    public void IngressHasMatchingServiceConfig_InstanceIdMismatch()
+    {
+        var ingress = CreateIngresses("999", "mowgli.devies.com", "test-service", 80, "/customer-a").First();
+        var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+    }
+
+    private List<V1Ingress> CreateIngresses(string instanceId, string host, string serviceName, int port, string path)
     {
         return new List<V1Ingress>()
         {
@@ -96,7 +97,14 @@ public class LogicTests
                 Metadata = new V1ObjectMeta()
                 {
                     NamespaceProperty = "default",
-                    Name = name,
+                    Name = new TenantConfig
+                    {
+                        HostName = host,
+                        InstanceId = instanceId,
+                        Path = path,
+                        Port = port,
+                        ServiceName = serviceName
+                    }.GetIngressName(),
                     Labels = new Dictionary<string, string>()
                     {
                         { "autocreated", "true" }, // TODO: Yeet me
