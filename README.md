@@ -33,7 +33,6 @@ data:
       "serviceName": "<name-of-a-service-in-the-cluster>",
       "instanceId": "<id-to-pass-down-to-service>",
       "hostName": "<ingress-rule-host>",
-      "port": "<port-for-the-service>",
       "path": "<ingress-rule-path>"
     }
 ```

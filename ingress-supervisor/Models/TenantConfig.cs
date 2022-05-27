@@ -14,14 +14,11 @@ public class TenantConfig
 
     public string HostName { get; set; }
 
-    // TODO: Do we need to have port in config?
-    public int Port { get; set; }
-
     public string Path { get; set; }
 
     public string GetIngressName()
     {
-        var source = Encoding.ASCII.GetBytes($"{ServiceName}{InstanceId}{HostName}{Port}{Path}");
+        var source = Encoding.ASCII.GetBytes($"{ServiceName}{InstanceId}{HostName}{Path}");
         var hash = BitConverter.ToString(SHA1.Create().ComputeHash(source)).Replace("-", string.Empty).ToLower();
         var remainingLength = IngressNameMaxLength - hash.Length;
         var prefix = $"{ServiceName}-{InstanceId}";
@@ -30,7 +27,7 @@ public class TenantConfig
 
     public override string ToString()
     {
-        return $"ServiceName: {ServiceName}, InstanceId: {InstanceId}, HostName: {HostName}, Port: {Port}, Path: {Path}";
+        return $"ServiceName: {ServiceName}, InstanceId: {InstanceId}, HostName: {HostName}, Path: {Path}";
     }
 
     // TODO: Handle when deserialize not possible
