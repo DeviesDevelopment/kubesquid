@@ -35,6 +35,18 @@ public class KubernetesWrapper
 
     public async Task CreateIngress(TenantConfig tenantConfig)
     {
+        int servicePort = 0;
+        try
+        {
+            var service = await _client.ReadNamespacedServiceAsync(tenantConfig.ServiceName, _targetNamespace);
+            servicePort = service.Spec.Ports.First().Port;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to fetch port number for service {}, due to: {}", tenantConfig.ServiceName, e.Message);
+            return;
+        }
+
         var ingress = new V1Ingress()
         {
             Kind = "Ingress",
@@ -83,7 +95,7 @@ public class KubernetesWrapper
                                         Name = tenantConfig.ServiceName,
                                         Port = new V1ServiceBackendPort()
                                         {
-                                            Number = tenantConfig.Port
+                                            Number = servicePort
                                         }
                                     }
                                 }
