@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Text.Json;
 using ingress_supervisor.Models;
 using k8s;
+using k8s.Autorest;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 
@@ -41,7 +41,7 @@ public class KubernetesWrapper
             var service = await _client.ReadNamespacedServiceAsync(tenantConfig.ServiceName, _targetNamespace);
             servicePort = service.Spec.Ports.First().Port;
         }
-        catch (Exception e)
+        catch (HttpOperationException e)
         {
             _logger.LogError("Failed to fetch port number for service {}, due to: {}", tenantConfig.ServiceName, e.Message);
             return;
@@ -112,7 +112,7 @@ public class KubernetesWrapper
             await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
             _logger.LogInformation("Successfully created ingress: {}", ingress.Metadata.Name);
         }
-        catch (Exception e)
+        catch (HttpOperationException e)
         {
             _logger.LogError("Failed to create ingress {}, due to: {}", ingress.Metadata.Name, e.Message);
         }
@@ -126,7 +126,7 @@ public class KubernetesWrapper
             await _client.DeleteNamespacedIngressAsync(ingressName, _targetNamespace);
             _logger.LogInformation("Successfully deleted ingress: {}", ingressName);
         }
-        catch (Exception e)
+        catch (HttpOperationException e)
         {
             _logger.LogError("Failed to delete ingress {}, due to: {}", ingressName, e.Message);
         }
