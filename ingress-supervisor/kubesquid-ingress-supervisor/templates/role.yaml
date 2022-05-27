@@ -1,7 +1,7 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: watch-services
+  name: read-services
   namespace: default
 rules:
   - apiGroups: ["*"]
@@ -11,7 +11,7 @@ rules:
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: watch-config-map
+  name: read-kubesquid-configmap
   namespace: default
 rules:
   - apiGroups: ["*"]
