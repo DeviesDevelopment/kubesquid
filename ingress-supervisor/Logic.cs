@@ -7,20 +7,22 @@ namespace ingress_supervisor;
 public class Logic
 {
 
-    public bool ServiceHasIngress(IList<V1Ingress> ingresses, TenantConfig serviceConfig)
+    public bool ServiceHasMatchingIngress(IList<V1Ingress> ingresses, TenantConfig serviceConfig)
     {
-        if (!ingresses.Any())
-        {
-            return false;
-        }
-
         var matchingIngresses = ingresses
-                .Where(ingress => "kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
-                .Where(ingress => ingress.Metadata.Name.Equals(serviceConfig.GetIngressName()));
+            .Where(ingress => "kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
+            .Where(ingress => ingress.Spec.Rules.First().Host.Equals(serviceConfig.HostName))
+            .Where(ingress => ingress.Spec.Rules.First().Http.Paths.First().Path.Equals(serviceConfig.Path))
+            .Where(ingress =>
+            {
+                if (!ingress.Metadata.Annotations.ContainsKey("nginx.ingress.kubernetes.io/configuration-snippet"))
+                    return false;
+                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.InstanceId);
+            });
         return matchingIngresses.Any();
     }
 
-    public bool IngressHasServiceConfig(V1Ingress ingress, IList<TenantConfig> squidConfig)
+    public bool IngressHasMatchingServiceConfig(V1Ingress ingress, IList<TenantConfig> squidConfig)
     {
         if (!"kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
         {
@@ -28,7 +30,15 @@ public class Logic
         }
 
         var matchingServiceConfigs = squidConfig
-            .Where(serviceConfig => serviceConfig.GetIngressName().Equals(ingress.Metadata.Name));
+            .Where(serviceConfig => serviceConfig.HostName.Equals(ingress.Spec.Rules.First().Host))
+            .Where(serviceConfig => serviceConfig.Path.Equals(ingress.Spec.Rules.First().Http.Paths.First().Path))
+            .Where(serviceConfig =>
+            {
+                if (!ingress.Metadata.Annotations.ContainsKey("nginx.ingress.kubernetes.io/configuration-snippet"))
+                    return false;
+                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.InstanceId);
+            });
+
         return matchingServiceConfigs.Any();
     }
 }

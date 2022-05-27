@@ -10,89 +10,142 @@ public class LogicTests
     private Logic _logic = new Logic();
 
     [Fact]
-    public void ServiceHasIngress_IngressExists()
+    public void ServiceHasMatchingIngress_Matching()
     {
-        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(_logic.ServiceHasIngress(ingresses, serviceConfig));
+        var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        Assert.True(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
     [Fact]
-    public void ServiceHasIngresses_NoIngressesExists()
+    public void ServiceHasMatchingIngress_HostMismatch()
     {
-        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        Assert.False(_logic.ServiceHasIngress(new List<V1Ingress>(), serviceConfig));
+        var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
     [Fact]
-    public void IngressHasServiceConfig_ServiceExist()
+    public void ServiceHasMatchingIngress_PathMismatch()
     {
-        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        var ingresses = CreateIngresses(serviceConfig.GetIngressName(), "666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(_logic.IngressHasServiceConfig(ingresses.First(), new List<TenantConfig> { serviceConfig }));
+        var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/some-new-path");
+        var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
     [Fact]
-    public void IngressHasServiceConfig_NoServiceExist()
+    public void ServiceHasMatchingIngress_InstanceIdMismatch()
     {
-        var ingresses = CreateIngresses("test-service-666-ingress", "666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.False(_logic.IngressHasServiceConfig(ingresses.First(), new List<TenantConfig>()));
+        var serviceConfig = CreateServiceConfig("test-service", "some-new-instance-id", "mowgli.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
     }
 
+    [Fact]
+    public void ServiceHasMatchingIngresses_NoIngressesExists()
+    {
+        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
+        Assert.False(_logic.ServiceHasMatchingIngress(new List<V1Ingress>(), serviceConfig));
+    }
 
-    private List<V1Ingress> CreateIngresses(string name, string instanceId, string host, string serviceName, int port, string path)
+    [Fact]
+    public void IngressHasMatchingServiceConfig_Matching()
+    {
+        var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
+        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        Assert.True(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig> { serviceConfig }));
+    }
+
+    [Fact]
+    public void IngressHasMatchingServiceConfig_NoServiceExist()
+    {
+        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig>()));
+    }
+
+    [Fact]
+    public void IngressHasMatchingServiceConfig_HostMismatch()
+    {
+        var ingress = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a").First();
+        var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+    }
+
+    [Fact]
+    public void IngressHasMatchingServiceConfig_PathMismatch()
+    {
+        var ingress = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/some/other/path").First();
+        var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+    }
+
+    [Fact]
+    public void IngressHasMatchingServiceConfig_InstanceIdMismatch()
+    {
+        var ingress = CreateIngresses("999", "mowgli.devies.com", "test-service", 80, "/customer-a").First();
+        var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
+        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+    }
+
+    private List<V1Ingress> CreateIngresses(string instanceId, string host, string serviceName, int port, string path)
     {
         return new List<V1Ingress>()
         {
             new V1Ingress()
             {
-            Kind = "Ingress",
-            Metadata = new V1ObjectMeta()
-            {
-                NamespaceProperty = "default",
-                Name = name,
-                Labels = new Dictionary<string, string>()
-            {
-                { "autocreated", "true" }, // TODO: Yeet me
-                { "app.kubernetes.io/created-by", "kubesquid" }
-            },
-                Annotations = new Dictionary<string, string>()
-            {
-                {"kubernetes.io/ingress.class", "nginx"},
-                {"nginx.ingress.kubernetes.io/rewrite-target", "/$1"},
-                {"nginx.ingress.kubernetes.io/use-regex", "true"},
+                Kind = "Ingress",
+                Metadata = new V1ObjectMeta()
                 {
-                    $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
+                    NamespaceProperty = "default",
+                    Name = new TenantConfig
+                    {
+                        HostName = host,
+                        InstanceId = instanceId,
+                        Path = path,
+                        Port = port,
+                        ServiceName = serviceName
+                    }.GetIngressName(),
+                    Labels = new Dictionary<string, string>()
+                    {
+                        { "autocreated", "true" }, // TODO: Yeet me
+                        { "app.kubernetes.io/created-by", "kubesquid" }
+                    },
+                    Annotations = new Dictionary<string, string>()
+                    {
+                        { "kubernetes.io/ingress.class", "nginx" },
+                        { "nginx.ingress.kubernetes.io/rewrite-target", "/$1" },
+                        { "nginx.ingress.kubernetes.io/use-regex", "true" },
+                        {
+                            $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
                         proxy_set_header InstanceId {instanceId};
                     "
+                        },
+                        { "nginx.ingress.kubernetes.io/proxy-body-size", "600m" },
+                        { "nginx.org/client-max-body-size", "600m" }
+                    }
                 },
-                {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
-                {"nginx.org/client-max-body-size", "600m"}
-            }
-            },
-            Spec = new V1IngressSpec()
-            {
-                Rules = new List<V1IngressRule>()
-            {
-                new V1IngressRule()
+                Spec = new V1IngressSpec()
                 {
-                    Host = host,
-                    Http = new V1HTTPIngressRuleValue()
+                    Rules = new List<V1IngressRule>()
                     {
-                        Paths = new Collection<V1HTTPIngressPath>()
+                        new V1IngressRule()
                         {
-                            new V1HTTPIngressPath()
+                            Host = host,
+                            Http = new V1HTTPIngressRuleValue()
                             {
-                                Path = path,
-                                PathType = "ImplementationSpecific",
-                                Backend = new V1IngressBackend()
+                                Paths = new Collection<V1HTTPIngressPath>()
                                 {
-                                    Service = new V1IngressServiceBackend()
+                                    new V1HTTPIngressPath()
                                     {
-                                        Name = serviceName,
-                                        Port = new V1ServiceBackendPort()
+                                        Path = path,
+                                        PathType = "ImplementationSpecific",
+                                        Backend = new V1IngressBackend()
                                         {
-                                            Number = port
+                                            Service = new V1IngressServiceBackend()
+                                            {
+                                                Name = serviceName,
+                                                Port = new V1ServiceBackendPort() { Number = port }
+                                            }
                                         }
                                     }
                                 }
@@ -100,8 +153,6 @@ public class LogicTests
                         }
                     }
                 }
-                }
-            }
             }
         };
     }

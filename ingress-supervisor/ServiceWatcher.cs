@@ -44,13 +44,14 @@ public class ServiceWatcher : BackgroundService
         _logger.LogInformation("Starting to watch services");
         await foreach (var (type, service) in servicesListResp.WatchAsync<V1Service, V1ServiceList>())
         {
+
             _logger.LogInformation("Got Service Event of Type: {} for Service: {}", type, service.Metadata.Name);
             if (service.Metadata?.Annotations?.ContainsKey("squid") != true)
             {
                 _logger.LogInformation("Ignoring service {} due to missing squid annotation", service.Metadata.Name);
                 continue;
             }
-
+            // TODO: Check that configmap exists.
             var squidConfig = await _kubernetesWrapper.GetSquidConfig();
             var serviceConfigs = squidConfig
                 .Where(config => config.ServiceName.Equals(service.Metadata.Name))
@@ -62,7 +63,7 @@ public class ServiceWatcher : BackgroundService
                 case WatchEventType.Added:
                     foreach (var serviceConfig in serviceConfigs)
                     {
-                        if (!_logic.ServiceHasIngress(allIngresses, serviceConfig))
+                        if (!_logic.ServiceHasMatchingIngress(allIngresses, serviceConfig))
                         {
                             await _kubernetesWrapper.CreateIngress(serviceConfig);
                             _logger.LogInformation("Created ingress for service: {}", service.Metadata.Name);
@@ -72,7 +73,7 @@ public class ServiceWatcher : BackgroundService
                 case WatchEventType.Deleted:
                     foreach (var serviceConfig in serviceConfigs)
                     {
-                        if (_logic.ServiceHasIngress(allIngresses, serviceConfig))
+                        if (_logic.ServiceHasMatchingIngress(allIngresses, serviceConfig))
                         {
                             await _kubernetesWrapper.DeleteIngress(serviceConfig.GetIngressName());
                             _logger.LogInformation("Deleted ingress for service: {}", serviceConfig.ServiceName);

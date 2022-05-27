@@ -36,7 +36,7 @@ curl localhost/customer-b -s -H "host: baloo.devies.com" | grep "Instanceid: 888
 curl localhost/customer-c -s -H "host: baloo.devies.com" | grep "404 Not Found"
 curl localhost/customer-a -s -H "host: baloo.devies.com" -H "Instanceid: 1337" | grep --invert-match "Instanceid: 1337"
 
-# Update config with new service config
+# Extend configuration with new instance
 kubectl apply -f test-configmap-extended.yml
 sleep 5
 
@@ -50,14 +50,22 @@ sleep 5
 # Verify delete (triggered on config change)
 curl localhost/customer-c -s -H "host: mowgli.devies.com" | grep "404 Not Found"
 
+# Update existing configuration with new instanceId for kunda and new hostname for kundb.
+kubectl apply -f test-configmap-modified.yml
+sleep 5
+
+# Verify updates (triggered on config change)
+curl localhost/customer-d -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
+curl localhost/customer-b -s -H "host: bagheera.devies.com" | grep "Instanceid: 888"
+
 # Uninstall whoami
 helm uninstall whoami
 kubectl wait --for=delete pod --selector=app.kubernetes.io/name=whoami --timeout=60s
 sleep 5
 
 # Verify delete (triggered on service delete)
-curl localhost/customer-a -s -H "host: baloo.devies.com" | grep "404 Not Found"
-echo "GET baloo.devies.com/customer-a successfully returned 404 Not Found"
+curl localhost/customer-d -s -H "host: baloo.devies.com" | grep "404 Not Found"
+echo "GET baloo.devies.com/customer-d successfully returned 404 Not Found"
 
-curl localhost/customer-b -s -H "host: baloo.devies.com" | grep "404 Not Found"
+curl localhost/customer-b -s -H "host: bagheera.devies.com" | grep "404 Not Found"
 echo "GET baloo.devies.com/customer-b successfully returned 404 Not Found"

@@ -3,19 +3,22 @@ using System.Text.Json;
 using ingress_supervisor.Models;
 using k8s;
 using k8s.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ingress_supervisor;
 
 public class KubernetesWrapper
 {
+    private readonly ILogger<KubernetesWrapper> _logger;
     private const string ConfigMapName = "kubesquid";
     private readonly Kubernetes _client;
     private readonly string _targetNamespace;
 
-    public KubernetesWrapper(Kubernetes client, KubernetesClientConfiguration config)
+    public KubernetesWrapper(Kubernetes client, KubernetesClientConfiguration config, ILogger<KubernetesWrapper> logger)
     {
         _client = client;
         _targetNamespace = config.Namespace;
+        _logger = logger;
     }
 
     public async Task<IList<V1Ingress>> GetIngresses()
@@ -50,7 +53,7 @@ public class KubernetesWrapper
                 {"nginx.ingress.kubernetes.io/rewrite-target", "/$1"},
                 {"nginx.ingress.kubernetes.io/use-regex", "true"},
                 {
-                    $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
+                    "nginx.ingress.kubernetes.io/configuration-snippet", @$"
                         proxy_set_header InstanceId {tenantConfig.InstanceId};
                     "
                 },
@@ -92,11 +95,29 @@ public class KubernetesWrapper
             }
         };
 
-        var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+        try
+        {
+            await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+            _logger.LogInformation("Successfully created ingress: {}", ingress.Metadata.Name);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to create ingress {}, due to: {}", ingress.Metadata.Name, e.Message);
+        }
+
     }
 
     public async Task DeleteIngress(string ingressName)
     {
-        await _client.DeleteNamespacedIngressAsync(ingressName, _targetNamespace);
+        try
+        {
+            await _client.DeleteNamespacedIngressAsync(ingressName, _targetNamespace);
+            _logger.LogInformation("Successfully deleted ingress: {}", ingressName);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Failed to delete ingress {}, due to: {}", ingressName, e.Message);
+        }
+
     }
 }
