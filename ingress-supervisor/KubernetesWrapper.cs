@@ -97,7 +97,7 @@ public class KubernetesWrapper
 
         try
         {
-            var b = await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
+            await _client.CreateNamespacedIngressAsync(ingress, _targetNamespace);
             _logger.LogInformation("Successfully created ingress: {}", ingress.Metadata.Name);
         }
         catch (Exception e)
