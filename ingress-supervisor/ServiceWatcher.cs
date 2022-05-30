@@ -1,4 +1,5 @@
 using ingress_supervisor;
+using ingress_supervisor.Models;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Hosting;
@@ -51,6 +52,7 @@ public class ServiceWatcher : BackgroundService
                 _logger.LogInformation("Ignoring service {} due to missing squid annotation", service.Metadata.Name);
                 continue;
             }
+
             // TODO: Check that configmap exists.
             var squidConfig = await _kubernetesWrapper.GetSquidConfig();
             var serviceConfigs = squidConfig
@@ -69,6 +71,7 @@ public class ServiceWatcher : BackgroundService
                             _logger.LogInformation("Created ingress for service: {}", service.Metadata.Name);
                         }
                     }
+
                     break;
                 case WatchEventType.Deleted:
                     foreach (var serviceConfig in serviceConfigs)
@@ -79,6 +82,27 @@ public class ServiceWatcher : BackgroundService
                             _logger.LogInformation("Deleted ingress for service: {}", serviceConfig.ServiceName);
                         }
                     }
+
+                    break;
+                case WatchEventType.Modified:
+                    var allIngressesForService = await _kubernetesWrapper.FindAllIngressesForService(service.Metadata.Name);
+                    foreach (var ingress in allIngressesForService)
+                    {
+                        var servicePort = service.Spec.Ports.First().Port;
+                        var ingressPort = ingress.Spec.Rules.First().Http.Paths.First().Backend.Service.Port.Number;
+                        if (!servicePort.Equals(ingressPort))
+                        {
+                            await _kubernetesWrapper.DeleteIngress(ingress.Metadata.Name);
+                            await _kubernetesWrapper.CreateIngress(new TenantConfig()
+                            {
+                                ServiceName = service.Metadata.Name,
+                                InstanceId = ingress.Metadata.Labels["kubesquid-instanceid"],
+                                HostName = ingress.Spec.Rules.First().Host,
+                                Path = ingress.Spec.Rules.First().Http.Paths.First().Path
+                            });
+                        }
+                    }
+
                     break;
             }
         }

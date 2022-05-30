@@ -27,6 +27,12 @@ public class KubernetesWrapper
         return ingresses.Items;
     }
 
+    public async Task<IList<V1Ingress>> FindAllIngressesForService(string serviceName)
+    {
+        var ingresses = await GetIngresses();
+        return ingresses.Where(i => i.Spec.Rules.Any(r => r.Http.Paths.Any(p => p.Backend.Service.Name.Equals(serviceName)))).ToList();
+    }
+
     public async Task<List<TenantConfig?>> GetSquidConfig()
     {
         var configMap = await _client.ReadNamespacedConfigMapAsync(ConfigMapName, _targetNamespace);
@@ -55,47 +61,46 @@ public class KubernetesWrapper
                 NamespaceProperty = _targetNamespace,
                 Name = tenantConfig.GetIngressName(),
                 Labels = new Dictionary<string, string>()
-            {
-                { "autocreated", "true" }, // TODO: Yeet me
-                { "app.kubernetes.io/created-by", "kubesquid" }
-            },
-                Annotations = new Dictionary<string, string>()
-            {
-                {"kubernetes.io/ingress.class", "nginx"},
-                {"nginx.ingress.kubernetes.io/rewrite-target", "/$1"},
-                {"nginx.ingress.kubernetes.io/use-regex", "true"},
                 {
-                    "nginx.ingress.kubernetes.io/configuration-snippet", @$"
+                    { "autocreated", "true" }, // TODO: Yeet me
+                    { "app.kubernetes.io/created-by", "kubesquid" },
+                    { "kubesquid-instanceid", tenantConfig.InstanceId }
+                },
+                Annotations = new Dictionary<string, string>()
+                {
+                    { "kubernetes.io/ingress.class", "nginx" },
+                    { "nginx.ingress.kubernetes.io/rewrite-target", "/$1" },
+                    { "nginx.ingress.kubernetes.io/use-regex", "true" },
+                    {
+                        "nginx.ingress.kubernetes.io/configuration-snippet", @$"
                         proxy_set_header InstanceId {tenantConfig.InstanceId};
                     "
-                },
-                {"nginx.ingress.kubernetes.io/proxy-body-size", "600m"},
-                {"nginx.org/client-max-body-size", "600m"}
-            }
+                    },
+                    { "nginx.ingress.kubernetes.io/proxy-body-size", "600m" },
+                    { "nginx.org/client-max-body-size", "600m" }
+                }
             },
             Spec = new V1IngressSpec()
             {
                 Rules = new List<V1IngressRule>()
-            {
-                new V1IngressRule()
                 {
-                    Host = tenantConfig.HostName,
-                    Http = new V1HTTPIngressRuleValue()
+                    new V1IngressRule()
                     {
-                        Paths = new Collection<V1HTTPIngressPath>()
+                        Host = tenantConfig.HostName,
+                        Http = new V1HTTPIngressRuleValue()
                         {
-                            new V1HTTPIngressPath()
+                            Paths = new Collection<V1HTTPIngressPath>()
                             {
-                                Path = tenantConfig.Path,
-                                PathType = "ImplementationSpecific",
-                                Backend = new V1IngressBackend()
+                                new V1HTTPIngressPath()
                                 {
-                                    Service = new V1IngressServiceBackend()
+                                    Path = tenantConfig.Path,
+                                    PathType = "ImplementationSpecific",
+                                    Backend = new V1IngressBackend()
                                     {
-                                        Name = tenantConfig.ServiceName,
-                                        Port = new V1ServiceBackendPort()
+                                        Service = new V1IngressServiceBackend()
                                         {
-                                            Number = servicePort
+                                            Name = tenantConfig.ServiceName,
+                                            Port = new V1ServiceBackendPort() { Number = servicePort }
                                         }
                                     }
                                 }
@@ -103,7 +108,6 @@ public class KubernetesWrapper
                         }
                     }
                 }
-            }
             }
         };
 
