@@ -102,7 +102,6 @@ public class LogicTests
                         HostName = host,
                         InstanceId = instanceId,
                         Path = path,
-                        Port = port,
                         ServiceName = serviceName
                     }.GetIngressName(),
                     Labels = new Dictionary<string, string>()
@@ -164,7 +163,6 @@ public class LogicTests
             ServiceName = serviceName,
             InstanceId = instanceId,
             HostName = hostname,
-            Port = port,
             Path = path
         };
     }

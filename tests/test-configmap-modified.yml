@@ -8,7 +8,6 @@ data:
       "serviceName": "whoami",
       "instanceId": "666",
       "hostName": "baloo.devies.com",
-      "port": 80,
       "path": "/customer-d"
     }
   kundb: |
@@ -16,6 +15,5 @@ data:
       "serviceName": "whoami",
       "instanceId": "888",
       "hostName": "bagheera.devies.com",
-      "port": 80,
       "path": "/customer-b"
     }
