@@ -4,6 +4,8 @@
 
 Kubesquid is a white label solution for external access to services in a Kubernetes cluster via HTTP and HTTPS. Kubesquid manages ingresses based on your configuration and what services are currently deployed to your cluster.
 
+![image](https://user-images.githubusercontent.com/8545435/170988870-119a1ff6-a452-4257-8433-8316f418c82a.png)
+
 ## Requirements
 
 - [Helm](https://helm.sh/docs/intro/install/)
