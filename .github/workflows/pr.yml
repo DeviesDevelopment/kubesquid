@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: apt install kubectl=1.23.6-00
+      - run: sudo apt install kubectl=1.23.6-00
       - uses: helm/kind-action@v1.2.0
         with:
           config: tests/cluster-config.yml
