@@ -66,7 +66,7 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
           sudo apt-get update
           sudo apt-get install -y kubectl
-      - uses: helm/kind-action@deab45f
+      - uses: helm/kind-action@deab45fc8df9de5090a604e8ec11778eea7170bd
         with:
           config: tests/cluster-config.yml
           cluster_name: kind
