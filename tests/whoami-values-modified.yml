@@ -1,0 +1,4 @@
+service:
+  annotations:
+    squid: "true"
+  port: 99

@@ -58,10 +58,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: helm/kind-action@v1.2.0
+      - uses: helm/kind-action@deab45fc8df9de5090a604e8ec11778eea7170bd
         with:
           config: tests/cluster-config.yml
           cluster_name: kind
+          version: v0.14.0
+          kubectl_version: v1.24.1
+      - run: kubectl version
       - uses: actions/download-artifact@v3
         with:
           name: ${{ env.IMAGE_NAME }}.tar.gz

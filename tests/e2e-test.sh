@@ -58,6 +58,15 @@ sleep 5
 curl localhost/customer-d -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
 curl localhost/customer-b -s -H "host: bagheera.devies.com" | grep "Instanceid: 888"
 
+# Update whoami service with new port
+helm upgrade --install -f whoami-values-modified.yml whoami cowboysysop/whoami
+kubectl wait --for=jsonpath='{spec.ports[0].port}=99' --timeout=30s --namespace default services/whoami
+sleep 5
+
+# Verify update (trigger on service change)
+curl localhost/customer-d -s -H "host: baloo.devies.com" | grep "Instanceid: 666"
+curl localhost/customer-b -s -H "host: bagheera.devies.com" | grep "Instanceid: 888"
+
 # Uninstall whoami
 helm uninstall whoami
 kubectl wait --for=delete pod --selector=app.kubernetes.io/name=whoami --timeout=60s
