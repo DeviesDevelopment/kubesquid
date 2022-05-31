@@ -59,7 +59,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: azure/setup-kubectl@v2.0
-      - run: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.6/bin/linux/amd64/kubectl
+        with:
+            version: 1.23.7
       - uses: helm/kind-action@v1.2.0
         with:
           config: tests/cluster-config.yml
