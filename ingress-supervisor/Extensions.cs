@@ -4,9 +4,9 @@ using k8s.Models;
 
 namespace ingress_supervisor;
 
-public static class MyExtensions
+public static class Extensions
 {
-    public static bool HasMatchingServiceConfigExtension(this V1Ingress ingress, IList<TenantConfig> squidConfig)
+    public static bool HasMatchingServiceConfig(this V1Ingress ingress, IList<TenantConfig> squidConfig)
     {
         if (!"kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
         {
