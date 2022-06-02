@@ -13,14 +13,12 @@ public class ConfigmapWatcher : BackgroundService
     private readonly KubernetesWrapper _kubernetesWrapper;
     private readonly string _targetNamespace;
     private readonly ILogger<ConfigmapWatcher> _logger;
-    private readonly Logic _logic;
 
-    public ConfigmapWatcher(Kubernetes client, KubernetesClientConfiguration config, KubernetesWrapper kubernetesWrapper, ILogger<ConfigmapWatcher> logger, Logic logic)
+    public ConfigmapWatcher(Kubernetes client, KubernetesClientConfiguration config, KubernetesWrapper kubernetesWrapper, ILogger<ConfigmapWatcher> logger)
     {
         _client = client;
         _kubernetesWrapper = kubernetesWrapper;
         _logger = logger;
-        _logic = logic;
         _targetNamespace = config.Namespace;
     }
 

@@ -12,15 +12,13 @@ public class ServiceWatcher : BackgroundService
     private readonly Kubernetes _client;
     private readonly string _targetNamespace;
     private readonly KubernetesWrapper _kubernetesWrapper;
-    private readonly Logic _logic;
     private readonly ILogger<ServiceWatcher> _logger;
 
-    public ServiceWatcher(Kubernetes client, KubernetesClientConfiguration config, KubernetesWrapper kubernetesWrapper, Logic logic, ILogger<ServiceWatcher> logger)
+    public ServiceWatcher(Kubernetes client, KubernetesClientConfiguration config, KubernetesWrapper kubernetesWrapper, ILogger<ServiceWatcher> logger)
     {
         _client = client;
         _targetNamespace = config.Namespace;
         _kubernetesWrapper = kubernetesWrapper;
-        _logic = logic;
         _logger = logger;
     }
 

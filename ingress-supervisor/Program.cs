@@ -13,7 +13,6 @@ var builder = new HostBuilder().ConfigureServices((hostContext, services) =>
     services.AddSingleton<Kubernetes>(new Kubernetes(config));
     services.AddSingleton<KubernetesClientConfiguration>(config);
     services.AddSingleton<KubernetesWrapper>();
-    services.AddSingleton<Logic>();
     services.AddHostedService<ServiceWatcher>();
     services.AddHostedService<ConfigmapWatcher>();
 });
