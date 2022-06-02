@@ -55,7 +55,7 @@ public class ConfigmapWatcher : BackgroundService
 
                     foreach (var ingress in allIngresses)
                     {
-                        if (!_logic.IngressHasMatchingServiceConfig(ingress, squidConfig.ToList()))
+                        if (ingress.HasMatchingServiceConfigExtension(squidConfig.ToList()))
                         {
                             await _kubernetesWrapper.DeleteIngress(ingress.Metadata.Name);
                         }

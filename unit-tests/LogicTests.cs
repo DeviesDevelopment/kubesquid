@@ -53,7 +53,7 @@ public class LogicTests
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
         var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig> { serviceConfig }));
+        Assert.True(ingresses.First().HasMatchingServiceConfigExtension(new List<TenantConfig>() { serviceConfig }));
     }
 
     [Fact]
