@@ -5,16 +5,15 @@ using k8s.Models;
 
 namespace unit_tests;
 
-public class LogicTests
+public class ExtensionTests
 {
-    private Logic _logic = new Logic();
 
     [Fact]
     public void ServiceHasMatchingIngress_Matching()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a");
         var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
+        Assert.True(serviceConfig.HasMatchingIngress(ingresses));
     }
 
     [Fact]
@@ -22,7 +21,7 @@ public class LogicTests
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a");
         var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
+        Assert.False(serviceConfig.HasMatchingIngress(ingresses));
     }
 
     [Fact]
@@ -30,7 +29,7 @@ public class LogicTests
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/some-new-path");
         var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
-        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
+        Assert.False(serviceConfig.HasMatchingIngress(ingresses));
     }
 
     [Fact]
@@ -38,14 +37,14 @@ public class LogicTests
     {
         var serviceConfig = CreateServiceConfig("test-service", "some-new-instance-id", "mowgli.devies.com", 80, "/customer-a");
         var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
-        Assert.False(_logic.ServiceHasMatchingIngress(ingresses, serviceConfig));
+        Assert.False(serviceConfig.HasMatchingIngress(ingresses));
     }
 
     [Fact]
     public void ServiceHasMatchingIngresses_NoIngressesExists()
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
-        Assert.False(_logic.ServiceHasMatchingIngress(new List<V1Ingress>(), serviceConfig));
+        Assert.False(serviceConfig.HasMatchingIngress(new List<V1Ingress>()));
     }
 
     [Fact]
@@ -53,14 +52,14 @@ public class LogicTests
     {
         var serviceConfig = CreateServiceConfig("test-service", "666", "baloo.devies.com", 80, "/customer-a");
         var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.True(ingresses.First().HasMatchingServiceConfigExtension(new List<TenantConfig>() { serviceConfig }));
+        Assert.True(ingresses.First().HasMatchingServiceConfig(new List<TenantConfig>() { serviceConfig }));
     }
 
     [Fact]
     public void IngressHasMatchingServiceConfig_NoServiceExist()
     {
-        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a");
-        Assert.False(_logic.IngressHasMatchingServiceConfig(ingresses.First(), new List<TenantConfig>()));
+        var ingresses = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a").First();
+        Assert.False(ingresses.HasMatchingServiceConfig(new List<TenantConfig>()));
     }
 
     [Fact]
@@ -68,7 +67,7 @@ public class LogicTests
     {
         var ingress = CreateIngresses("666", "baloo.devies.com", "test-service", 80, "/customer-a").First();
         var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
-        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+        Assert.False(ingress.HasMatchingServiceConfig(serviceConfigs));
     }
 
     [Fact]
@@ -76,7 +75,7 @@ public class LogicTests
     {
         var ingress = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/some/other/path").First();
         var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
-        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+        Assert.False(ingress.HasMatchingServiceConfig(serviceConfigs));
     }
 
     [Fact]
@@ -84,7 +83,7 @@ public class LogicTests
     {
         var ingress = CreateIngresses("999", "mowgli.devies.com", "test-service", 80, "/customer-a").First();
         var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
-        Assert.False(_logic.IngressHasMatchingServiceConfig(ingress, serviceConfigs));
+        Assert.False(ingress.HasMatchingServiceConfig(serviceConfigs));
     }
 
     private List<V1Ingress> CreateIngresses(string instanceId, string host, string serviceName, int port, string path)
