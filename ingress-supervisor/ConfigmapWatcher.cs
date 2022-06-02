@@ -47,7 +47,7 @@ public class ConfigmapWatcher : BackgroundService
                     var allIngresses = await _kubernetesWrapper.GetIngresses();
                     foreach (var serviceConfig in squidConfig)
                     {
-                        if (!_logic.ServiceHasMatchingIngress(allIngresses, serviceConfig))
+                        if (!serviceConfig.HasMatchingIngress(allIngresses))
                         {
                             await _kubernetesWrapper.CreateIngress(serviceConfig);
                         }

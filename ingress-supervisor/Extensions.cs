@@ -25,4 +25,19 @@ public static class Extensions
 
         return matchingServiceConfigs.Any();
     }
+
+    public static bool HasMatchingIngress(this TenantConfig serviceConfig, IList<V1Ingress> ingresses)
+    {
+        var matchingIngresses = ingresses
+            .Where(ingress => "kubesquid".Equals(ingress.Metadata.Labels.GetOrDefault("app.kubernetes.io/created-by")))
+            .Where(ingress => ingress.Spec.Rules.First().Host.Equals(serviceConfig.HostName))
+            .Where(ingress => ingress.Spec.Rules.First().Http.Paths.First().Path.Equals(serviceConfig.Path))
+            .Where(ingress =>
+            {
+                if (!ingress.Metadata.Annotations.ContainsKey("nginx.ingress.kubernetes.io/configuration-snippet"))
+                    return false;
+                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.InstanceId);
+            });
+        return matchingIngresses.Any();
+    }
 }
