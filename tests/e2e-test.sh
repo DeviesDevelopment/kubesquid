@@ -16,7 +16,7 @@ done
 
 # Verify that cluster is running
 kubectl version
-kind load docker-image deviesdevelopment/kubesquid:"$IMAGE_TAG" --name kind
+kind load docker-image deviesdevelopment/kubesquid-ingress-supervisor:"$IMAGE_TAG" --name kind
 helm package ../ingress-supervisor/kubesquid-ingress-supervisor
 helm install --set image.tag="$IMAGE_TAG" kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
 kubectl apply -f test-configmap.yml

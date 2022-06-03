@@ -3,7 +3,7 @@
 # Terminate if any command fails
 set -ex
 
-docker build --no-cache -t deviesdevelopment/kubesquid:e2e-test ingress-supervisor
+docker build --no-cache -t deviesdevelopment/kubesquid-ingress-supervisor:e2e-test ingress-supervisor
 
 kind delete cluster
 # Create cluster with configuration allowing an Ingress Controller

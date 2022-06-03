@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: deviesdevelopment/kubesquid
+  repository: deviesdevelopment/kubesquid-ingress-supervisor
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
