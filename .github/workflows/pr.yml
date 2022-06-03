@@ -4,7 +4,7 @@ on:
     branches:
       - master
 env:
-  IMAGE_NAME: ingress-supervisor-${{ github.event.number }}
+  IMAGE_NAME: kubesquid:${{ github.event.number }}
 
 jobs:
   docker-build:
@@ -70,6 +70,6 @@ jobs:
           name: ${{ env.IMAGE_NAME }}.tar.gz
       - run: |
           docker image load --input ${{ env.IMAGE_NAME }}.tar.gz
-          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid:${{ github.event.number }}
       - run: ./e2e-test.sh ${{ github.event.number }}
         working-directory: tests
