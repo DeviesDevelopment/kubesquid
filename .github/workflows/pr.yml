@@ -4,7 +4,7 @@ on:
     branches:
       - master
 env:
-  IMAGE_NAME: kubesquid${{ github.event.number }}
+  IMAGE_NAME: kubesquid-${{ github.event.number }}
 
 jobs:
   docker-build:
