@@ -14,9 +14,9 @@ serviceAccount:
   annotations: {}
   name: ""
 
-podAnnotations: {}
-
-podSecurityContext: {}
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
 
 securityContext:
   capabilities:

@@ -11,10 +11,7 @@ spec:
       {{- include "kubesquid-ingress-supervisor.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      annotations: {}
       labels:
         {{- include "kubesquid-ingress-supervisor.selectorLabels" . | nindent 8 }}
     spec:
