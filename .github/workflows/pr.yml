@@ -44,8 +44,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - run: |
           docker image load --input ${{ env.IMAGE_NAME }}.tar.gz
-          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${{ github.event.number }}
+          docker image tag ${{ env.IMAGE_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid:${{ github.event.number }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid:${{ github.event.number }}
 
   unit-test:
     runs-on: ubuntu-latest
