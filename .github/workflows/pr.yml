@@ -13,9 +13,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: hadolint/hadolint-action@v2.0.0
         with:
-          dockerfile: ingress-supervisor/Dockerfile
+          dockerfile: kubesquid/Dockerfile
       - run: |
-          docker build -f ingress-supervisor/Dockerfile -t ${{ env.IMAGE_NAME }} ingress-supervisor
+          docker build -f kubesquid/Dockerfile -t ${{ env.IMAGE_NAME }} kubesquid
           docker save --output ${{ env.IMAGE_NAME }}.tar ${{ env.IMAGE_NAME }}
       - uses: aquasecurity/trivy-action@master
         with:
