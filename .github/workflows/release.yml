@@ -3,7 +3,7 @@ name: Release Chart
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   release:
