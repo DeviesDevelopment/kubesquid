@@ -2,7 +2,7 @@
 replicaCount: 1
 
 image:
-  repository: miledevies/kubesquid-ingress-supervisor
+  repository: deviesdevelopment/kubesquid-ingress-supervisor
   pullPolicy: IfNotPresent
   tag: latest
 
