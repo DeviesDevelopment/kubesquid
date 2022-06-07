@@ -1,6 +1,6 @@
 apiVersion: v2
 name: kubesquid-ingress-supervisor
-description: A Helm chart for Kubernetes
+description: White label solution for external access to services in a Kubernetes cluster via HTTP and HTTPS
 type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
