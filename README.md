@@ -50,4 +50,4 @@ From repository root, run:
 
 A new release will be published on commits to `master` if `/charts/kubesquid-ingress-supervisor/Chart.yml` has been updated, i.e the `version` field.
 
-GitHub Pages is used being used for hosting our Helm Chart. On every release, we update the `index.yaml` file with the new release on the `gh-pages` branch. Every release contains the packaged helm chart as `kubesquid-ingress-supervisor-<version>.tgz` which the `index.yml` file refers to.
+GitHub Pages is being used for hosting the Helm Chart. On every release, we update the `index.yaml` file with the new release on the `gh-pages` branch. Every release contains the packaged helm chart as `kubesquid-ingress-supervisor-<version>.tgz` which the `index.yml` file refers to.
