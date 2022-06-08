@@ -20,7 +20,7 @@ jobs:
           version: v3.8.1
       - run: |
           mkdir .deploys
-          helm package ingress-supervisor/kubesquid-ingress-supervisor -d .deploys
+          helm package charts/kubesquid-ingress-supervisor -d .deploys
       - uses: helm/chart-releaser-action@v1.1.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
