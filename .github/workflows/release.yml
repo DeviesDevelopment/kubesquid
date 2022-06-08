@@ -1,0 +1,29 @@
+name: Release Chart
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - uses: azure/setup-helm@v1
+        with:
+          version: v3.8.1
+      - run: |
+          mkdir .deploys
+          helm package charts/kubesquid-ingress-supervisor -d .deploys
+      - uses: helm/chart-releaser-action@v1.1.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_PACKAGE_PATH: ".deploys"
+          CR_SKIP_EXISTING: "true"
+
