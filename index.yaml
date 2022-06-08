@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  kubesquid-ingress-supervisor:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-06-08T10:43:14.415510391Z"
+    description: White label solution for external access to services in a Kubernetes cluster via HTTP and HTTPS
+    digest: 1c38c298c55ad9458292135abd8b8b152ba411a3ef7e06f460dd9207c58119d3
+    name: kubesquid-ingress-supervisor
+    type: application
+    urls:
+    - https://github.com/DeviesDevelopment/kubesquid/releases/download/kubesquid-ingress-supervisor-0.1.0/kubesquid-ingress-supervisor-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-06-08T10:43:14.07695257Z"
