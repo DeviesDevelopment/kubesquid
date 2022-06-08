@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - master
+    paths:
+      - 'charts/kubesquid-ingress-supervisor/Chart.yml'
 
 jobs:
   release:
