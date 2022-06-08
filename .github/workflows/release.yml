@@ -27,4 +27,5 @@ jobs:
           CR_OWNER: "deviesdevelopment"
           CR_GIT_REPO: "helm-charts"
           CR_PACKAGE_PATH: ".deploys"
+          CR_CHART_DIR: "/"
 
