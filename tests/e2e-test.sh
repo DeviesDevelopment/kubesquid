@@ -16,7 +16,7 @@ done
 
 # Verify that cluster is running
 kubectl version
-kind load docker-image miledevies/kubesquid-ingress-supervisor:"$IMAGE_TAG" --name kind
+kind load docker-image deviesdevelopment/kubesquid-ingress-supervisor:"$IMAGE_TAG" --name kind
 helm package ../ingress-supervisor/kubesquid-ingress-supervisor
 helm install --set image.tag="$IMAGE_TAG" kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
 kubectl apply -f test-configmap.yml
@@ -78,3 +78,5 @@ echo "GET baloo.devies.com/customer-d successfully returned 404 Not Found"
 
 curl localhost/customer-b -s -H "host: bagheera.devies.com" | grep "404 Not Found"
 echo "GET baloo.devies.com/customer-b successfully returned 404 Not Found"
+
+echo "end-to-end ran successfully!"
