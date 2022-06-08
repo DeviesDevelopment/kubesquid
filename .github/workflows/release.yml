@@ -25,4 +25,5 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_PACKAGE_PATH: ".deploys"
+          CR_SKIP_EXISTING: "true"
 
