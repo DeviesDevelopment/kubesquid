@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'charts/kubesquid-ingress-supervisor/Chart.yml'
+      - 'charts/kubesquid-ingress-supervisor/Chart.yaml'
 
 jobs:
   release:
