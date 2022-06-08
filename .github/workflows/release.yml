@@ -24,9 +24,5 @@ jobs:
       - uses: helm/chart-releaser-action@v1.1.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_OWNER: "deviesdevelopment"
-          CR_GIT_REPO: "helm-charts"
           CR_PACKAGE_PATH: ".deploys"
-          CR_CHARTS_DIR: "/"
-          CR_CHARTS_REPO_URL: "https://deviesdevelopment.github.io/helm-charts/"
 
