@@ -1,7 +1,7 @@
 name: Release Chart
 
 on:
-  pull_request:
+  merge:
     branches:
       - master
     paths:
