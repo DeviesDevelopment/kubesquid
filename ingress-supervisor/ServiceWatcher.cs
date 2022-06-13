@@ -94,7 +94,7 @@ public class ServiceWatcher : BackgroundService
                             await _kubernetesWrapper.CreateIngress(new TenantConfig()
                             {
                                 ServiceName = service.Metadata.Name,
-                                InstanceId = ingress.Metadata.Labels["kubesquid-instanceid"],
+                                TenantId = ingress.Metadata.Labels["kubesquid-tenantid"],
                                 HostName = ingress.Spec.Rules.First().Host,
                                 Path = ingress.Spec.Rules.First().Http.Paths.First().Path
                             });

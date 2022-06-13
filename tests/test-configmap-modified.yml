@@ -6,14 +6,14 @@ data:
   kunda: |
     {
       "serviceName": "whoami",
-      "instanceId": "666",
+      "tenantId": "666",
       "hostName": "baloo.devies.com",
       "path": "/customer-d"
     }
   kundb: |
     {
       "serviceName": "whoami",
-      "instanceId": "888",
+      "tenantId": "888",
       "hostName": "bagheera.devies.com",
       "path": "/customer-b"
     }

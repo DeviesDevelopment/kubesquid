@@ -64,7 +64,7 @@ public class KubernetesWrapper
                 {
                     { "autocreated", "true" }, // TODO: Yeet me
                     { "app.kubernetes.io/created-by", "kubesquid" },
-                    { "kubesquid-instanceid", tenantConfig.InstanceId }
+                    { "kubesquid-tenantid", tenantConfig.TenantId }
                 },
                 Annotations = new Dictionary<string, string>()
                 {
@@ -73,7 +73,7 @@ public class KubernetesWrapper
                     { "nginx.ingress.kubernetes.io/use-regex", "true" },
                     {
                         "nginx.ingress.kubernetes.io/configuration-snippet", @$"
-                        proxy_set_header InstanceId {tenantConfig.InstanceId};
+                        proxy_set_header TenantId {tenantConfig.TenantId};
                     "
                     },
                     { "nginx.ingress.kubernetes.io/proxy-body-size", "600m" },
