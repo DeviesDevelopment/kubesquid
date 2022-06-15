@@ -12,14 +12,14 @@ public class TenantConfigTests
         {
             HostName = "shere-khan.devies.com",
             Path = "/my-path",
-            InstanceId = "666",
+            TenantId = "666",
             ServiceName = "some-backend-service"
         };
         var tenantConfigWithIdenticalValues = new TenantConfig
         {
             HostName = "shere-khan.devies.com",
             Path = "/my-path",
-            InstanceId = "666",
+            TenantId = "666",
             ServiceName = "some-backend-service"
         };
         Assert.NotSame(tenantConfig, tenantConfigWithIdenticalValues);
@@ -33,7 +33,7 @@ public class TenantConfigTests
         {
             HostName = "shere-khan.devies.com",
             Path = "/my-path",
-            InstanceId = "666",
+            TenantId = "666",
             ServiceName = "some-backend-service"
         }.GetIngressName();
         Assert.Matches(new Regex(@"^[a-z0-9][a-z0-9\-\.]*[a-z0-9]$"), ingressName);
@@ -48,7 +48,7 @@ public class TenantConfigTests
         {
             HostName = "shere-khan.devies.com",
             Path = "/my-path",
-            InstanceId = "666",
+            TenantId = "666",
             ServiceName = veryLongServiceName
         }.GetIngressName();
         var expectedHash = "5fe6bf660bddab333bb56a2a1cda4946363bca0c";

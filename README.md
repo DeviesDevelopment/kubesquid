@@ -23,7 +23,7 @@ data:
   <some-key>: |
     {
       "serviceName": "<name-of-a-service-in-the-cluster>",
-      "instanceId": "<id-to-pass-down-to-service>",
+      "tenantId": "<id-to-pass-down-to-service>",
       "hostName": "<ingress-rule-host>",
       "path": "<ingress-rule-path>"
     }

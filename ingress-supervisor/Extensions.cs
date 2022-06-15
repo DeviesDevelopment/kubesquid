@@ -20,7 +20,7 @@ public static class Extensions
             {
                 if (!ingress.Metadata.Annotations.ContainsKey("nginx.ingress.kubernetes.io/configuration-snippet"))
                     return false;
-                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.InstanceId);
+                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.TenantId);
             });
 
         return matchingServiceConfigs.Any();
@@ -36,7 +36,7 @@ public static class Extensions
             {
                 if (!ingress.Metadata.Annotations.ContainsKey("nginx.ingress.kubernetes.io/configuration-snippet"))
                     return false;
-                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.InstanceId);
+                return ingress.Metadata.Annotations["nginx.ingress.kubernetes.io/configuration-snippet"].Contains(serviceConfig.TenantId);
             });
         return matchingIngresses.Any();
     }

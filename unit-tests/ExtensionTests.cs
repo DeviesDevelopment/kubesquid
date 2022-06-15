@@ -33,9 +33,9 @@ public class ExtensionTests
     }
 
     [Fact]
-    public void ServiceHasMatchingIngress_InstanceIdMismatch()
+    public void ServiceHasMatchingIngress_TenantIdMismatch()
     {
-        var serviceConfig = CreateServiceConfig("test-service", "some-new-instance-id", "mowgli.devies.com", 80, "/customer-a");
+        var serviceConfig = CreateServiceConfig("test-service", "some-new-tenant-id", "mowgli.devies.com", 80, "/customer-a");
         var ingresses = CreateIngresses("666", "mowgli.devies.com", "test-service", 80, "/customer-a");
         Assert.False(serviceConfig.HasMatchingIngress(ingresses));
     }
@@ -79,14 +79,14 @@ public class ExtensionTests
     }
 
     [Fact]
-    public void IngressHasMatchingServiceConfig_InstanceIdMismatch()
+    public void IngressHasMatchingServiceConfig_TenantIdMismatch()
     {
         var ingress = CreateIngresses("999", "mowgli.devies.com", "test-service", 80, "/customer-a").First();
         var serviceConfigs = new List<TenantConfig> { CreateServiceConfig("test-service", "666", "mowgli.devies.com", 80, "/customer-a") };
         Assert.False(ingress.HasMatchingServiceConfig(serviceConfigs));
     }
 
-    private List<V1Ingress> CreateIngresses(string instanceId, string host, string serviceName, int port, string path)
+    private List<V1Ingress> CreateIngresses(string tenantId, string host, string serviceName, int port, string path)
     {
         return new List<V1Ingress>()
         {
@@ -99,7 +99,7 @@ public class ExtensionTests
                     Name = new TenantConfig
                     {
                         HostName = host,
-                        InstanceId = instanceId,
+                        TenantId = tenantId,
                         Path = path,
                         ServiceName = serviceName
                     }.GetIngressName(),
@@ -115,7 +115,7 @@ public class ExtensionTests
                         { "nginx.ingress.kubernetes.io/use-regex", "true" },
                         {
                             $"nginx.ingress.kubernetes.io/configuration-snippet", @$"
-                        proxy_set_header InstanceId {instanceId};
+                        proxy_set_header TenantId {tenantId};
                     "
                         },
                         { "nginx.ingress.kubernetes.io/proxy-body-size", "600m" },
@@ -155,12 +155,12 @@ public class ExtensionTests
         };
     }
 
-    private TenantConfig CreateServiceConfig(string serviceName, string instanceId, string hostname, int port, string path)
+    private TenantConfig CreateServiceConfig(string serviceName, string tenantId, string hostname, int port, string path)
     {
         return new TenantConfig()
         {
             ServiceName = serviceName,
-            InstanceId = instanceId,
+            TenantId = tenantId,
             HostName = hostname,
             Path = path
         };
