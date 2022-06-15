@@ -1,7 +1,7 @@
 name: Release Chart
 
 on:
-  merge:
+  push:
     branches:
       - master
     paths:
