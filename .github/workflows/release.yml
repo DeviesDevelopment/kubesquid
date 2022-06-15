@@ -20,6 +20,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - run: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${PR}
           docker image tag ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:${PR} ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/kubesquid-ingress-supervisor:latest
         if: success() && steps.findPr.outputs.number
