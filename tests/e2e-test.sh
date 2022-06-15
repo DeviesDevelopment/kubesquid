@@ -18,7 +18,7 @@ done
 kubectl version
 kind load docker-image deviesdevelopment/kubesquid-ingress-supervisor:"$IMAGE_TAG" --name kind
 helm package ../charts/kubesquid-ingress-supervisor
-helm install --set image.tag="$IMAGE_TAG" kubesquid-ingress-supervisor kubesquid-ingress-supervisor-0.1.0.tgz
+helm install --set image.tag="$IMAGE_TAG" kubesquid-ingress-supervisor kubesquid-ingress-supervisor-*.tgz
 kubectl apply -f test-configmap.yml
 # Install whoami service and annotate it with "squid"
 helm repo add cowboysysop https://cowboysysop.github.io/charts/
